@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Devbhoomi Admin | {{ title }}{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/admin-theme.css' %}">
+{% endblock %}
+
+{% block branding %}
+  <h1 id="site-name">
+    <a href="{% url 'admin:index' %}">Devbhoomi Admin</a>
+  </h1>
+{% endblock %}
+
+{% block userlinks %}
+  {{ block.super }}
+{% endblock %}
+
+{% block bodyclass %}admin-theme{% endblock %}
