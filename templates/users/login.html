@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Devbhoomi Group of Hotels</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <link rel="stylesheet" href="{% static 'css/global.css' %}">
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:index' %}">
+                <i class="fas fa-om"></i>
+                <span class="brand-text">
+                    <span class="brand-main">Devbhoomi</span>
+                    <span class="brand-sub">Group of Hotels</span>
+                </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'core:index' %}#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'core:index' %}#about-dwarka">About Dwarka</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'core:index' %}#top-rated-hotels">Top Rated</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'core:index' %}#contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link btn-login" href="{% url 'users:login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link btn-signup" href="{% url 'users:signup' %}">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container mt-4">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="auth-page">
+        <div class="auth-wrapper d-flex flex-column flex-lg-row">
+        <div class="auth-hero flex-lg-grow-1">
+            <a href="{% url 'core:index' %}" class="text-white text-decoration-none d-inline-flex align-items-center mb-4 fw-semibold">
+                <i class="fas fa-om me-2"></i> Devbhoomi Group of Hotels
+            </a>
+            <h2>Welcome Back to Your Sacred Getaway</h2>
+            <p>Access exclusive deals, saved itineraries, and lightning-fast bookings tailor-made for your pilgrimage.</p>
+            <ul class="highlights p-0">
+                <li><i class="fas fa-shield-alt"></i> Secure account with multi-layer protection</li>
+                <li><i class="fas fa-tag"></i> Personalized offers on premium stays</li>
+                <li><i class="fas fa-history"></i> Quick re-book from your travel history</li>
+            </ul>
+            <p class="mt-4 text-white-50">New here? <a href="{% url 'users:signup' %}" class="text-white fw-semibold text-decoration-underline">Create an account</a></p>
+        </div>
+        <div class="auth-card flex-lg-grow-1">
+            <h3>Login to Continue</h3>
+            <p class="subtitle">Enter your credentials to manage bookings and unlock member-only perks with Devbhoomi Group of Hotels.</p>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="mb-4">
+                    <label for="{{ form.identifier.id_for_label }}" class="form-label">Email address / Username</label>
+                    {{ form.identifier }}
+                    {% for error in form.identifier.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                    {{ form.password }}
+                    {% for error in form.password.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                    </div>
+                    <a href="#" class="link-muted">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn-auth mb-3">Login Securely</button>
+                <p class="text-center text-muted">Or continue with</p>
+                <div class="social-login d-flex gap-3 justify-content-center">
+                    <button type="button" type="button"><i class="fab fa-google me-2"></i>Google</button>
+                    <button type="button"><i class="fab fa-facebook-f me-2"></i>Facebook</button>
+                </div>
+                <p class="text-center mt-4 text-muted">Don't have an account? <a href="{% url 'users:signup' %}" class="link-muted fw-semibold">Sign Up</a></p>
+            </form>
+        </div>
+    </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

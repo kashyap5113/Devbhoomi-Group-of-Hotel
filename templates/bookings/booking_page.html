@@ -1,0 +1,537 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Booking - Devbhoomi Group of Hotels</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <link rel="stylesheet" href="{% static 'css/global.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:index' %}">
+                <i class="fas fa-om"></i>Devbhoomi Group of Hotels
+            </a>
+            <div class="ms-auto">
+                <span style="color: white; font-size: 1.1rem;">
+                    <i class="fas fa-shield-alt me-2" style="color: var(--gold);"></i>Secure Booking
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <section class="progress-section">
+        <div class="container">
+            <div class="booking-progress">
+                <div class="progress-step active" id="step1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Login / Guest</div>
+                </div>
+                <div class="progress-step" id="step2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Guest Details</div>
+                </div>
+                <div class="progress-step" id="step3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Review & Pay</div>
+                </div>
+                <div class="progress-step" id="step4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Confirmation</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section class="booking-section">
+        <div class="container">
+            <div class="row">
+                <!-- Main Content -->
+                <div class="col-lg-8">
+                    
+                    <!-- Step 1: Login/Guest -->
+                    <div class="booking-step active" id="content-step1">
+                        <div class="booking-card">
+                            <h2 class="section-title">
+                                <i class="fas fa-user-circle"></i>
+                                Login or Continue as Guest
+                            </h2>
+                            
+                            <div class="login-options">
+                                <div class="login-option" onclick="selectLoginOption(this, 'guest')">
+                                    <i class="fas fa-user"></i>
+                                    <h5>Continue as Guest</h5>
+                                    <p>Quick booking without account</p>
+                                </div>
+                                <div class="login-option" onclick="selectLoginOption(this, 'login')">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    <h5>Login</h5>
+                                    <p>Access your saved details</p>
+                                </div>
+                                <div class="login-option" onclick="selectLoginOption(this, 'signup')">
+                                    <i class="fas fa-user-plus"></i>
+                                    <h5>Create Account</h5>
+                                    <p>Get exclusive offers</p>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                                <button class="btn-continue" style="width: auto; padding: 15px 40px;" onclick="alert('Downloading voucher...')">
+                                    <i class="fas fa-download me-2"></i>Download Voucher
+                                </button>
+                                <button class="btn-back" style="width: auto; padding: 15px 40px; margin-top: 0;" onclick="alert('Sending to email...')">
+                                    <i class="fas fa-envelope me-2"></i>Email Voucher
+                                </button>
+                            </div>
+
+                            <div style="margin-top: 40px;">
+                                <a href="{% url 'core:index' %}" onclick="resetBooking()" style="color: var(--peacock-green); text-decoration: none; font-weight: 600; font-size: 1.1rem;">
+                                    <i class="fas fa-home me-2"></i>Back to Homepage
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="trust-badges">
+                            <div class="trust-badge">
+                                <i class="fas fa-headset"></i>
+                                <p>24/7 Support</p>
+                            </div>
+                            <div class="trust-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <p>Secure Payment</p>
+                            </div>
+                            <div class="trust-badge">
+                                <i class="fas fa-undo"></i>
+                                <p>Easy Cancellation</p>
+                            </div>
+                            <div class="trust-badge">
+                                <i class="fas fa-check-circle"></i>
+                                <p>Instant Confirmation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar - Booking Summary -->
+                <div class="col-lg-4">
+                    <div class="booking-card" style="position: sticky; top: 100px;">
+                        <h3 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 25px;">
+                            <i class="fas fa-file-invoice me-2" style="color: var(--gold);"></i>
+                            Booking Summary
+                        </h3>
+
+                        <!-- Hotel Summary -->
+                        <div class="hotel-summary">
+                            <div class="hotel-summary-content">
+                                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=120&h=120&fit=crop" alt="Hotel" class="hotel-summary-image">
+                                <div class="hotel-summary-info">
+                                    <h4>Krishna Heritage Hotel</h4>
+                                    <p><i class="fas fa-star"></i> 4.8 Rating</p>
+                                    <p><i class="fas fa-map-marker-alt"></i> Near Dwarkadhish Temple</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Booking Details -->
+                        <div style="margin-bottom: 25px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e0e0e0;">
+                                <div>
+                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Check-in</p>
+                                    <p style="color: var(--peacock-green); font-weight: 600; margin: 5px 0;">25 Dec 2024</p>
+                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">12:00 PM</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Check-out</p>
+                                    <p style="color: var(--peacock-green); font-weight: 600; margin: 5px 0;">27 Dec 2024</p>
+                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">11:00 AM</p>
+                                </div>
+                            </div>
+
+                            <div style="padding: 15px; background: var(--palm-cream); border-radius: 10px; margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color: #666;"><i class="fas fa-moon me-2"></i>Nights</span>
+                                    <strong>2</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color: #666;"><i class="fas fa-door-open me-2"></i>Rooms</span>
+                                    <strong>1</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: #666;"><i class="fas fa-users me-2"></i>Guests</span>
+                                    <strong>2 Adults</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Price Breakdown -->
+                        <div class="price-breakdown">
+                            <h5 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 15px;">Price Details</h5>
+                            
+                            <div class="price-row">
+                                <span class="price-label">Room Price (2 nights)</span>
+                                <span class="price-value">₹6,998</span>
+                            </div>
+                            
+                            <div class="price-row">
+                                <span class="price-label">Taxes & Fees</span>
+                                <span class="price-value">₹840</span>
+                            </div>
+                            
+                            <div class="price-row">
+                                <span class="price-label">Discount (30% OFF)</span>
+                                <span class="price-value" style="color: #4CAF50;">- ₹3,000</span>
+                            </div>
+                            
+                            <div class="price-row">
+                                <span class="price-label">Coupon Discount</span>
+                                <span class="price-value" style="color: #4CAF50;">- ₹500</span>
+                            </div>
+
+                            <div class="total-price">
+                                <span class="label">Total Amount</span>
+                                <span class="amount">₹4,338</span>
+                            </div>
+                        </div>
+
+                        <!-- Inclusions -->
+                        <div style="background: var(--palm-cream); border-radius: 12px; padding: 20px;">
+                            <h5 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 15px;">
+                                <i class="fas fa-check-circle me-2" style="color: var(--gold);"></i>What's Included
+                            </h5>
+                            <div style="display: grid; gap: 10px;">
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-check" style="color: var(--gold); margin-right: 10px;"></i>
+                                    <span style="color: #666;">Complimentary Breakfast</span>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-check" style="color: var(--gold); margin-right: 10px;"></i>
+                                    <span style="color: #666;">Free Wi-Fi</span>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-check" style="color: var(--gold); margin-right: 10px;"></i>
+                                    <span style="color: #666;">Free Parking</span>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-check" style="color: var(--gold); margin-right: 10px;"></i>
+                                    <span style="color: #666;">Temple View Room</span>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-check" style="color: var(--gold); margin-right: 10px;"></i>
+                                    <span style="color: #666;">Free Cancellation</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Help -->
+                        <div style="margin-top: 25px; text-align: center; padding: 20px; background: white; border: 2px dashed var(--peacock-green); border-radius: 12px;">
+                            <i class="fas fa-phone-alt" style="font-size: 2rem; color: var(--peacock-green); margin-bottom: 10px;"></i>
+                            <p style="color: #666; margin-bottom: 8px; font-weight: 500;">Need Help?</p>
+                            <p style="color: var(--peacock-green); font-weight: 700; font-size: 1.2rem; margin: 0;">
+                                +91 1800 123 4567
+                            </p>
+                            <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">24/7 Customer Support</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Step Navigation
+        function nextStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.booking-step').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.progress-step').forEach(el => {
+                el.classList.remove('active');
+                el.classList.remove('completed');
+            });
+            
+            // Show current step
+            document.getElementById('content-step' + step).classList.add('active');
+            document.getElementById('step' + step).classList.add('active');
+            
+            // Mark previous steps as completed
+            for (let i = 1; i < step; i++) {
+                document.getElementById('step' + i).classList.add('completed');
+            }
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Login Option Selection
+        function selectLoginOption(element, type) {
+            // Remove active class from all options
+            document.querySelectorAll('.login-option').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Hide all forms
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('guestForm').style.display = 'none';
+            
+            // Show selected form
+            if (type === 'login' || type === 'signup') {
+                document.getElementById('loginForm').style.display = 'block';
+            } else if (type === 'guest') {
+                document.getElementById('guestForm').style.display = 'block';
+            }
+        }
+
+        // Payment Option Selection
+        function selectPayment(element) {
+            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // Reset Booking
+        function resetBooking() {
+            nextStep(1);
+            document.querySelectorAll('.login-option').forEach(el => el.classList.remove('active'));
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('guestForm').style.display = 'none';
+        }
+
+        // Initialize first login option
+        window.onload = function() {
+            const firstOption = document.querySelector('.login-option');
+            if (firstOption) {
+                selectLoginOption(firstOption, 'guest');
+            }
+        };
+    </script>
+</body>
+</html><div id="loginForm" style="display: none;">
+                                <h4 style="color: var(--peacock-green); margin-bottom: 20px;">Login to Your Account</h4>
+                                <form>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email or Phone</label>
+                                        <input type="text" class="form-control" placeholder="Enter email or phone number">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Password</label>
+                                        <input type="password" class="form-control" placeholder="Enter password">
+                                    </div>
+                                    <button type="button" class="btn-continue" onclick="nextStep(2)">Login & Continue</button>
+                                </form>
+                            </div>
+
+                            <div id="guestForm" style="display: none;">
+                                <h4 style="color: var(--peacock-green); margin-bottom: 20px;">Continue as Guest</h4>
+                                <p style="color: #666; margin-bottom: 20px;">We'll need your email to send booking confirmation</p>
+                                <form>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" placeholder="your.email@example.com" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Mobile Number</label>
+                                        <input type="tel" class="form-control" placeholder="+91 98765 43210" required>
+                                    </div>
+                                    <button type="button" class="btn-continue" onclick="nextStep(2)">Continue as Guest</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Guest Details -->
+                    <div class="booking-step" id="content-step2">
+                        <div class="booking-card">
+                            <h2 class="section-title">
+                                <i class="fas fa-id-card"></i>
+                                Guest Details
+                            </h2>
+                            
+                            <form>
+                                <h4 style="color: var(--peacock-green); margin-bottom: 20px;">Primary Guest Information</h4>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Title</label>
+                                        <select class="form-select">
+                                            <option>Mr.</option>
+                                            <option>Mrs.</option>
+                                            <option>Ms.</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8 mb-3">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" placeholder="Enter full name as per ID">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" placeholder="email@example.com">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Mobile Number</label>
+                                        <input type="tel" class="form-control" placeholder="+91 98765 43210">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">ID Proof Type</label>
+                                    <select class="form-select">
+                                        <option>Aadhaar Card</option>
+                                        <option>PAN Card</option>
+                                        <option>Driving License</option>
+                                        <option>Passport</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">ID Number</label>
+                                    <input type="text" class="form-control" placeholder="Enter ID number">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Special Requests (Optional)</label>
+                                    <textarea class="form-control" rows="3" placeholder="Any special requirements? (e.g., early check-in, airport pickup, dietary preferences)"></textarea>
+                                </div>
+
+                                <button type="button" class="btn-continue" onclick="nextStep(3)">Continue to Payment</button>
+                                <button type="button" class="btn-back" onclick="nextStep(1)">Back</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Review & Payment -->
+                    <div class="booking-step" id="content-step3">
+                        <!-- Available Offers -->
+                        <div class="booking-card">
+                            <h2 class="section-title">
+                                <i class="fas fa-tag"></i>
+                                Available Offers
+                            </h2>
+                            
+                            <div class="offer-card">
+                                <div class="offer-icon">🎉</div>
+                                <div class="offer-content">
+                                    <h5>First Time User Offer</h5>
+                                    <p>Get ₹500 off on your first booking. Use code: FIRST500</p>
+                                </div>
+                            </div>
+
+                            <div class="offer-card" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);">
+                                <div class="offer-icon">💰</div>
+                                <div class="offer-content">
+                                    <h5>Temple Visit Special</h5>
+                                    <p>Extra 20% off for pilgrims. Use code: TEMPLE20</p>
+                                </div>
+                            </div>
+
+                            <div class="offer-card" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);">
+                                <div class="offer-icon">🏨</div>
+                                <div class="offer-content">
+                                    <h5>Weekend Getaway</h5>
+                                    <p>Book 2 nights, get 10% discount. Use code: WEEKEND10</p>
+                                </div>
+                            </div>
+
+                            <div class="coupon-input">
+                                <input type="text" class="form-control" placeholder="Enter coupon code">
+                                <button class="btn-apply">Apply</button>
+                            </div>
+                        </div>
+
+                        <!-- Payment Options -->
+                        <div class="booking-card">
+                            <h2 class="section-title">
+                                <i class="fas fa-credit-card"></i>
+                                Payment Method
+                            </h2>
+                            
+                            <div class="payment-option selected" onclick="selectPayment(this)">
+                                <div class="payment-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="payment-info">
+                                    <h5>Credit / Debit Card</h5>
+                                    <p>Visa, Mastercard, RuPay accepted</p>
+                                </div>
+                            </div>
+
+                            <div class="payment-option" onclick="selectPayment(this)">
+                                <div class="payment-icon">
+                                    <i class="fas fa-university"></i>
+                                </div>
+                                <div class="payment-info">
+                                    <h5>Net Banking</h5>
+                                    <p>All major banks supported</p>
+                                </div>
+                            </div>
+
+                            <div class="payment-option" onclick="selectPayment(this)">
+                                <div class="payment-icon">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div class="payment-info">
+                                    <h5>UPI Payment</h5>
+                                    <p>Google Pay, PhonePe, Paytm</p>
+                                </div>
+                            </div>
+
+                            <div class="payment-option" onclick="selectPayment(this)">
+                                <div class="payment-icon">
+                                    <i class="fas fa-hotel"></i>
+                                </div>
+                                <div class="payment-info">
+                                    <h5>Pay at Hotel</h5>
+                                    <p>Pay during check-in (Limited availability)</p>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn-continue" onclick="nextStep(4)">
+                                <i class="fas fa-lock me-2"></i>Proceed to Pay ₹6,998
+                            </button>
+                            <button type="button" class="btn-back" onclick="nextStep(2)">Back</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Confirmation -->
+                    <div class="booking-step" id="content-step4">
+                        <div class="booking-card" style="text-align: center;">
+                            <div style="font-size: 5rem; color: var(--gold); margin-bottom: 20px;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h2 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 15px;">
+                                Booking Confirmed!
+                            </h2>
+                            <p style="font-size: 1.2rem; color: #666; margin-bottom: 30px;">
+                                Your booking has been successfully confirmed. We've sent the confirmation details to your email.
+                            </p>
+                            
+                            <div style="background: var(--palm-cream); padding: 30px; border-radius: 15px; margin-bottom: 30px;">
+                                <h4 style="color: var(--peacock-green); margin-bottom: 20px;">Booking Details</h4>
+                                <div style="display: grid; gap: 15px; text-align: left;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: #666;">Booking ID:</span>
+                                        <strong style="color: var(--peacock-green);">DWK2024-7892</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: #666;">Hotel:</span>
+                                        <strong>Krishna Heritage Hotel</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: #666;">Check-in:</span>
+                                        <strong>25 Dec 2024</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: #666;">Check-out:</span>
+                                        <strong>27 Dec 2024</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: #666;">Total Amount:</span>
+                                        <strong style="color: var(--peacock-green); font-size: 1.3rem;">₹6,998</strong>
+                                    </div>
+                                </div>
+                            </div>

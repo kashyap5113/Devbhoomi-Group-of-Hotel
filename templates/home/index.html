@@ -1,0 +1,780 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devbhoomi Group of Hotels - Find Your Perfect Stay in Dwarka</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <link rel="stylesheet" href="{% static 'css/global.css' %}">
+
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:index' %}">
+                <i class="fas fa-om"></i>
+                 <!-- <img src="logo_main.png" alt=""> -->
+                <span class="brand-text">
+                    <span class="brand-main">Devbhoomi</span>
+                    <span class="brand-sub">Group of Hotels</span>
+                </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about-dwarka">About Dwarka</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#top-rated-hotels">Top Rated</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#popular-destinations">Destinations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'users:dashboard' %}">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-login" href="{% url 'users:logout' %}">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link btn-login" href="{% url 'users:login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-signup" href="{% url 'users:signup' %}">Sign Up</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Search -->
+    <section class="hero-section" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Find Your Perfect Stay in Dwarka</h1>
+                <p>Hotels near Dwarkadhish Temple, Gomti Ghat, and sacred landmarks</p>
+            </div>
+            
+            <div class="search-card">
+                <form id="searchForm" action="{% url 'hotels:search' %}" method="get">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" name="location" value="Dwarka, Gujarat" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Check-in</label>
+                            <input type="date" class="form-control" id="checkIn" name="checkIn" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Check-out</label>
+                            <input type="date" class="form-control" id="checkOut" name="checkOut" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Guests</label>
+                            <input type="number" class="form-control" id="guests" name="guests" min="1" value="1">
+                            <div class="form-text text-danger" id="guest-error"></div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-4">
+                            <label class="form-label">Adults</label>
+                            <input type="number" class="form-control" id="adults" name="adults" min="0" value="1">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Children</label>
+                            <input type="number" class="form-control" id="children" name="children" min="0" value="0">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Rooms</label>
+                            <input type="number" class="form-control" id="rooms" name="rooms" min="1" max="10" value="1">
+                            <div class="form-text text-danger" id="room-error"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-search">
+                        <i class="fas fa-search me-2"></i>Search Hotels
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Hotels Carousel -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Featured Hotels</h2>
+                <p>Handpicked premium stays for your divine journey</p>
+            </div>
+            {% if featured_hotels %}
+            <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    {% for hotel in featured_hotels %}
+                        <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></button>
+                    {% endfor %}
+                </div>
+                <div class="carousel-inner">
+                    {% for hotel in featured_hotels %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        {% if hotel.main_image %}
+                            <img src="{{ hotel.main_image.url }}" alt="{{ hotel.name }}">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=400&fit=crop" alt="{{ hotel.name }}">
+                        {% endif %}
+                        <div class="carousel-caption">
+                            <h3>{{ hotel.name }}</h3>
+                            <p>{{ hotel.description|default:'Premium stay in Dwarka'|truncatewords:20 }}</p>
+                            <a href="{% url 'bookings:booking_page' hotel.slug %}" class="btn btn-light mt-3">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Top Rated Hotels Section -->
+    <section class="hotels-section" id="top-rated-hotels">
+        <div class="container">
+            <div class="section-title">
+                <h2>Top Rated Hotels in Dwarka</h2>
+                <p>Handpicked stays with great reviews from pilgrims and tourists</p>
+            </div>
+            
+            {% if top_rated_hotels %}
+            <div class="row">
+                {% for hotel in top_rated_hotels %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="hotel-card">
+                        <div class="hotel-image">
+                            {% if hotel.main_image %}
+                                <img src="{{ hotel.main_image.url }}" alt="{{ hotel.name }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=250&fit=crop" alt="{{ hotel.name }}">
+                            {% endif %}
+                            {% if hotel.badge %}<div class="hotel-badge">{{ hotel.badge }}</div>{% endif %}
+                        </div>
+                        <div class="hotel-content">
+                            <a href="{% url 'hotels:details' hotel.slug %}" style="text-decoration: none;">
+                                <h3 class="hotel-name">{{ hotel.name }}</h3>
+                            </a>
+                            <div class="hotel-rating">
+                                <i class="fas fa-star"></i>
+                                <strong>{{ hotel.rating|default_if_none:"-" }}</strong>
+                                <span class="ms-2">({{ hotel.total_reviews }} reviews)</span>
+                            </div>
+                            <div class="hotel-location">
+                                <i class="fas fa-map-marker-alt"></i> {{ hotel.distance_from_temple|default:'Dwarka' }}
+                            </div>
+                            <div class="hotel-amenities">
+                                {% if hotel.has_wifi %}<span class="amenity-badge">Wi-Fi</span>{% endif %}
+                                {% if hotel.has_breakfast %}<span class="amenity-badge">Breakfast</span>{% endif %}
+                                {% if hotel.has_temple_view %}<span class="amenity-badge">Temple View</span>{% endif %}
+                                {% if hotel.has_parking %}<span class="amenity-badge">Parking</span>{% endif %}
+                            </div>
+                            <div class="hotel-footer">
+                                <div class="hotel-price">
+                                    ₹{{ hotel.discounted_price|floatformat:0 }}<span>/night</span>
+                                </div>
+                                <a href="{% url 'bookings:booking_page' hotel.slug %}" class="btn-view-details">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="text-center mt-5">
+                <a href="{% url 'hotels:search' %}" class="btn-view-details" style="padding: 15px 50px; font-size: 1.1rem;">
+                    View All Hotels <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Destinations Section -->
+    <section class="destinations-section" id="popular-destinations">
+        <div class="container">
+            <div class="section-title">
+                <h2>Popular Spots Around Dwarka</h2>
+                <p>Stay close to Dwarkadhish Temple, Gomti Ghat, Beyt Dwarka, and more</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400&h=350&fit=crop" alt="Dwarkadhish Temple">
+                        <div class="destination-overlay">
+                            <h4 class="destination-name">Dwarkadhish Temple</h4>
+                            <p class="destination-desc">Iconic Krishna temple at the heart of Dwarka</p>
+                            <a href="{% url 'hotels:search' %}" class="btn-view-hotels">View Nearby Hotels</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1548013146-72479768bada?w=400&h=350&fit=crop" alt="Gomti Ghat">
+                        <div class="destination-overlay">
+                            <h4 class="destination-name">Gomti Ghat</h4>
+                            <p class="destination-desc">Sacred bathing ghat on the Gomti River</p>
+                            <a href="{% url 'hotels:search' %}" class="btn-view-hotels">View Nearby Hotels</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=350&fit=crop" alt="Beyt Dwarka">
+                        <div class="destination-overlay">
+                            <h4 class="destination-name">Beyt Dwarka</h4>
+                            <p class="destination-desc">Island temple with pristine beaches</p>
+                            <a href="{% url 'hotels:search' %}" class="btn-view-hotels">View Nearby Hotels</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=400&h=350&fit=crop" alt="Nageshwar Temple">
+                        <div class="destination-overlay">
+                            <h4 class="destination-name">Nageshwar Jyotirlinga</h4>
+                            <p class="destination-desc">One of the 12 sacred Jyotirlinga temples</p>
+                            <a href="{% url 'hotels:search' %}" class="btn-view-hotels">View Nearby Hotels</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Dwarka Section -->
+    <section class="hotels-section" id="about-dwarka">
+        <div class="container">
+            <div class="section-title">
+                <h2>About Dwarka</h2>
+                <p>The sacred city of Lord Krishna</p>
+            </div>
+            
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4">
+                    <img src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=600&h=400&fit=crop" alt="Dwarka" style="border-radius: 20px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <h3 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 20px;">The Ancient Kingdom of Krishna</h3>
+                    <p style="color: #666; line-height: 1.8; margin-bottom: 15px;">
+                        Dwarka is one of the four sacred Hindu pilgrimage sites known as Char Dham. Located on the western tip of Gujarat, this ancient city holds immense religious significance as the legendary kingdom of Lord Krishna.
+                    </p>
+                    <p style="color: #666; line-height: 1.8; margin-bottom: 15px;">
+                        The magnificent Dwarkadhish Temple, dedicated to Lord Krishna, stands as the centerpiece of this holy city. With its intricate architecture and spiritual aura, it attracts millions of devotees and tourists every year.
+                    </p>
+                    <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">
+                        Beyond its religious importance, Dwarka offers serene beaches, the beautiful Gomti Ghat, and the nearby island of Beyt Dwarka, making it a perfect blend of spirituality and natural beauty.
+                    </p>
+                    <div>
+                        <span class="amenity-badge" style="margin-right: 10px; margin-bottom: 10px; display: inline-block;"><i class="fas fa-check me-2"></i>Char Dham Pilgrimage</span>
+                        <span class="amenity-badge" style="margin-right: 10px; margin-bottom: 10px; display: inline-block;"><i class="fas fa-check me-2"></i>Ancient Temples</span>
+                        <span class="amenity-badge" style="margin-right: 10px; margin-bottom: 10px; display: inline-block;"><i class="fas fa-check me-2"></i>Coastal Beauty</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="destinations-section" id="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2>Get In Touch</h2>
+                <p>Have questions? We're here to help plan your Dwarka journey</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                        <h4 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 30px;">Send us a Message</h4>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label" style="color: var(--peacock-green); font-weight: 600;">Your Name</label>
+                                <input type="text" class="form-control" placeholder="Enter your name" style="border: 2px solid #e0e0e0; border-radius: 10px; padding: 12px;">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" style="color: var(--peacock-green); font-weight: 600;">Email Address</label>
+                                <input type="email" class="form-control" placeholder="Enter your email" style="border: 2px solid #e0e0e0; border-radius: 10px; padding: 12px;">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" style="color: var(--peacock-green); font-weight: 600;">Phone Number</label>
+                                <input type="tel" class="form-control" placeholder="Enter your phone" style="border: 2px solid #e0e0e0; border-radius: 10px; padding: 12px;">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" style="color: var(--peacock-green); font-weight: 600;">Your Message</label>
+                                <textarea class="form-control" rows="4" placeholder="How can we help you?" style="border: 2px solid #e0e0e0; border-radius: 10px; padding: 12px;"></textarea>
+                            </div>
+                            <button type="submit" class="btn-search">Send Message <i class="fas fa-paper-plane ms-2"></i></button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); height: 100%;">
+                        <h4 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 30px;">Contact Information</h4>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <div style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                                <div style="width: 50px; height: 50px; background: var(--palm-cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                    <i class="fas fa-map-marker-alt" style="color: var(--peacock-green); font-size: 1.3rem;"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color: var(--peacock-green); font-weight: 600; margin-bottom: 5px;">Our Office</h6>
+                                    <p style="color: #666; margin: 0;">Near Dwarkadhish Temple<br>Dwarka, Gujarat 361335</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                                <div style="width: 50px; height: 50px; background: var(--palm-cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                    <i class="fas fa-phone-alt" style="color: var(--peacock-green); font-size: 1.3rem;"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color: var(--peacock-green); font-weight: 600; margin-bottom: 5px;">Phone</h6>
+                                    <p style="color: #666; margin: 0;">+91 1800 123 4567<br>+91 98765 43210</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                                <div style="width: 50px; height: 50px; background: var(--palm-cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                    <i class="fas fa-envelope" style="color: var(--peacock-green); font-size: 1.3rem;"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color: var(--peacock-green); font-weight: 600; margin-bottom: 5px;">Email</h6>
+                                    <p style="color: #666; margin: 0;">info@dwarkagetaways.com<br>support@dwarkagetaways.com</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; align-items: flex-start;">
+                                <div style="width: 50px; height: 50px; background: var(--palm-cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                    <i class="fas fa-clock" style="color: var(--peacock-green); font-size: 1.3rem;"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color: var(--peacock-green); font-weight: 600; margin-bottom: 5px;">Working Hours</h6>
+                                    <p style="color: #666; margin: 0;">Mon - Sat: 9:00 AM - 8:00 PM<br>Sunday: 10:00 AM - 6:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5><i class="fas fa-om me-2"></i>Devbhoomi Group of Hotels</h5>
+                    <p>Your trusted partner for spiritual journeys and comfortable stays in the holy city of Dwarka.</p>
+                    <div class="social-icons mt-3">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="{% url 'core:index' %}">Home</a></li>
+                        <li><a href="{% url 'core:about' %}">About Dwarka</a></li>
+                        <li><a href="{% url 'hotels:search' %}">Hotels</a></li>
+                        <li><a href="{% url 'core:contact' %}">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Popular Hotels</h5>
+                    <ul>
+                        {% for hotel in top_rated_hotels|slice:':3' %}
+                        <li><a href="{% url 'hotels:details' hotel.slug %}">{{ hotel.name }}</a></li>
+                        {% endfor %}
+                        <li><a href="{% url 'hotels:search' %}">View All Hotels</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Legal</h5>
+                    <ul>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Use</a></li>
+                        <li><a href="refund.html">Refund Policy</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2025 Devbhoomi Group of Hotels. All rights reserved. | Designed with <i class="fas fa-heart" style="color: var(--gold);"></i> for Pilgrims</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                    const targetPosition = target.offsetTop - navbarHeight - 20;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile navbar if open
+                    const navbarCollapse = document.querySelector('.navbar-collapse');
+                    if (navbarCollapse.classList.contains('show')) {
+                        const bsCollapse = new bootstrap.Collapse(navbarCollapse);
+                        bsCollapse.hide();
+                    }
+                }
+            });
+        });
+
+        // Redirect for 'Search Hotels' button in the search form
+        const searchForm = document.getElementById('searchForm');
+        const checkInInput = document.getElementById('checkIn');
+        const checkOutInput = document.getElementById('checkOut');
+
+        const setInitialDateLimits = () => {
+            const today = new Date().toISOString().split('T')[0];
+            if (checkInInput) {
+                checkInInput.min = today;
+                if (!checkInInput.value) checkInInput.value = today;
+            }
+            if (checkOutInput) {
+                checkOutInput.min = checkInInput?.value || today;
+            }
+        };
+
+        const enforceCheckoutAfterCheckin = () => {
+            if (!checkInInput || !checkOutInput) return;
+            checkOutInput.min = checkInInput.value;
+            if (checkOutInput.value && checkOutInput.value < checkInInput.value) {
+                checkOutInput.value = checkInInput.value;
+            }
+        };
+
+        setInitialDateLimits();
+        checkInInput?.addEventListener('change', enforceCheckoutAfterCheckin);
+
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                if (checkInInput && checkOutInput && checkOutInput.value < checkInInput.value) {
+                    e.preventDefault();
+                    checkOutInput.value = checkInInput.value;
+                    checkOutInput.focus();
+                    return;
+                }
+
+                if (!ensureGuestTotalsMatch()) {
+                    e.preventDefault();
+                    return;
+                }
+
+                validateRooms();
+                if (roomError && roomError.textContent) {
+                    e.preventDefault();
+                    roomsInput.focus();
+                    return;
+                }
+
+                e.preventDefault();
+                const params = new URLSearchParams(new FormData(searchForm));
+                window.location.href = `${searchForm.action}?${params.toString()}`;
+            });
+        }
+
+        // Guests, adults, children, rooms validation (automated)
+        const guestsInput = document.getElementById('guests');
+        const adultsInput = document.getElementById('adults');
+        const childrenInput = document.getElementById('children');
+        const roomsInput = document.getElementById('rooms');
+        const guestError = document.getElementById('guest-error');
+        const roomError = document.getElementById('room-error');
+
+        const ROOM_LIMIT = 10;
+        const MAX_ADULTS_PER_ROOM = 3;
+        const MAX_CHILDREN_PER_ROOM = 1;
+        const MAX_GUESTS_PER_ROOM = MAX_ADULTS_PER_ROOM + MAX_CHILDREN_PER_ROOM;
+
+        const sanitizeDigits = (input, maxValue = null) => {
+            if (!input) return '';
+            let digits = input.value.replace(/[^0-9]/g, '');
+            if (maxValue !== null && digits !== '') {
+                const parsed = parseInt(digits, 10);
+                if (!isNaN(parsed) && parsed > maxValue) {
+                    digits = maxValue.toString();
+                }
+            }
+            if (input.value !== digits) input.value = digits;
+            return digits;
+        };
+
+        const readValue = (input, { allowEmpty = false, maxValue = null } = {}) => {
+            const digits = sanitizeDigits(input, maxValue);
+            if (digits === '') return allowEmpty ? null : 0;
+            return parseInt(digits, 10);
+        };
+
+        const enforceBoundsOnBlur = (input, min, max = null) => {
+            if (!input) return min;
+            let value = readValue(input, { allowEmpty: true, maxValue: max });
+            if (value === null || isNaN(value)) value = min;
+            if (value < min) value = min;
+            if (max !== null && value > max) value = max;
+            input.value = value;
+            return value;
+        };
+
+        const calculateMinRooms = (adults, children, totalGuests) => {
+            const byAdults = Math.ceil(adults / MAX_ADULTS_PER_ROOM);
+            const byChildren = children > 0 ? Math.ceil(children / MAX_CHILDREN_PER_ROOM) : 0;
+            const byCapacity = Math.ceil(totalGuests / MAX_GUESTS_PER_ROOM);
+            return Math.max(1, byAdults, byChildren, byCapacity);
+        };
+
+        const validateRooms = (adultsOverride = null, childrenOverride = null) => {
+            if (!roomsInput) return;
+            const adults = adultsOverride ?? Math.max(1, readValue(adultsInput));
+            const children = childrenOverride ?? Math.max(0, readValue(childrenInput));
+            const totalGuests = adults + children;
+
+            const minRooms = calculateMinRooms(adults, children, totalGuests);
+            let roomsVal = readValue(roomsInput, { allowEmpty: true, maxValue: ROOM_LIMIT });
+            let message = '';
+
+            if (roomsVal === null) return; // wait for user input
+
+            if (minRooms > ROOM_LIMIT) {
+                roomsVal = ROOM_LIMIT;
+                message = `Guest count exceeds maximum (${ROOM_LIMIT} rooms, ${MAX_ADULTS_PER_ROOM} adults + ${MAX_CHILDREN_PER_ROOM} child per room). Reduce guests.`;
+            } else {
+                if (roomsVal < minRooms) {
+                    roomsVal = minRooms;
+                    message = `Need at least ${minRooms} room${minRooms > 1 ? 's' : ''} for current guests.`;
+                }
+                if (roomsVal > ROOM_LIMIT) {
+                    roomsVal = ROOM_LIMIT;
+                    message = `Maximum ${ROOM_LIMIT} rooms per booking.`;
+                }
+            }
+
+            roomsInput.value = roomsVal;
+            if (roomError) roomError.textContent = message;
+        };
+
+        const distributeFromGuests = (totalGuests) => {
+            const guests = Math.max(1, totalGuests);
+            let adults = readValue(adultsInput, { allowEmpty: true });
+            let children = readValue(childrenInput, { allowEmpty: true });
+            if (adults === null && children === null) {
+                adults = 0;
+                children = 0;
+            } else {
+                adults = Math.max(0, Math.min(adults ?? 0, guests));
+                children = Math.max(0, Math.min(children ?? 0, guests - adults));
+            }
+            if (adults + children > guests) {
+                if (adults > guests) {
+                    adults = guests;
+                    children = 0;
+                } else {
+                    children = guests - adults;
+                }
+            }
+            adultsInput.value = adults;
+            childrenInput.value = children;
+            guestsInput.value = guests;
+            if (guestError) guestError.textContent = '';
+            validateRooms(adults, children);
+        };
+
+        adultsInput?.addEventListener('input', () => {
+            // Allow user to erase and type any value, do not auto-fill or clamp
+            validateRooms(
+                readValue(adultsInput, { allowEmpty: true }) ?? 0,
+                readValue(childrenInput, { allowEmpty: true }) ?? 0
+            );
+        });
+
+        adultsInput?.addEventListener('blur', () => {
+            const guests = readValue(guestsInput, { allowEmpty: true });
+            let adults = enforceBoundsOnBlur(adultsInput, 0, guests);
+            let children = readValue(childrenInput, { allowEmpty: true });
+            adults = Math.max(0, Math.min(adults ?? 0, guests));
+            children = Math.max(0, Math.min(children ?? 0, guests - adults));
+            if (adults + children > guests) {
+                children = guests - adults;
+            }
+            adultsInput.value = adults;
+            childrenInput.value = children;
+            validateRooms(adults, children);
+        });
+
+        childrenInput?.addEventListener('input', () => {
+            const guests = readValue(guestsInput, { allowEmpty: true });
+            let adults = readValue(adultsInput, { allowEmpty: true });
+            let children = readValue(childrenInput, { allowEmpty: true });
+            if (adults === null && children === null) {
+                adultsInput.value = 0;
+                childrenInput.value = 0;
+                validateRooms(0, 0);
+                return;
+            }
+            children = Math.max(0, Math.min(children ?? 0, guests));
+            adults = Math.max(0, Math.min(adults ?? 0, guests - children));
+            if (adults + children > guests) {
+                adults = guests - children;
+            }
+            adultsInput.value = adults;
+            childrenInput.value = children;
+            validateRooms(adults, children);
+        });
+
+        childrenInput?.addEventListener('blur', () => {
+            const guests = readValue(guestsInput, { allowEmpty: true });
+            let children = enforceBoundsOnBlur(childrenInput, 0, guests);
+            let adults = readValue(adultsInput, { allowEmpty: true });
+            children = Math.max(0, Math.min(children ?? 0, guests));
+            adults = Math.max(0, Math.min(adults ?? 0, guests - children));
+            if (adults + children > guests) {
+                adults = guests - children;
+            }
+            adultsInput.value = adults;
+            childrenInput.value = children;
+            validateRooms(adults, children);
+        });
+
+        // Remove syncGuestsFromBreakdown and all logic that updates guests from adults/children
+        // Only update adults/children when guest count changes
+        guestsInput?.addEventListener('input', () => {
+            const value = readValue(guestsInput, { allowEmpty: true });
+            if (value === null) return;
+            distributeFromGuests(value);
+        });
+
+        guestsInput?.addEventListener('blur', () => {
+            const value = enforceBoundsOnBlur(guestsInput, 1);
+            distributeFromGuests(value);
+        });
+
+        adultsInput?.addEventListener('input', () => {
+            const guests = readValue(guestsInput, { allowEmpty: true });
+            // Clamp adults to [1, guests]
+            let value = readValue(adultsInput, { allowEmpty: true });
+            if (value === null) value = 1;
+            value = Math.max(1, Math.min(value, guests));
+            adultsInput.value = value;
+            childrenInput.value = Math.max(0, guests - value);
+            validateRooms(value, guests - value);
+        });
+
+        adultsInput?.addEventListener('blur', () => {
+            const guests = readValue(guestsInput, { allowEmpty: true });
+            let value = enforceBoundsOnBlur(adultsInput, 1);
+            value = Math.max(1, Math.min(value, guests));
+            adultsInput.value = value;
+            childrenInput.value = Math.max(0, guests - value);
+            validateRooms(value, guests - value);
+        });
+
+        childrenInput?.addEventListener('input', () => {
+            const guests = readValue(guestsInput, { allowEmpty: true });
+            let value = readValue(childrenInput, { allowEmpty: true });
+            if (value === null) value = 0;
+            value = Math.max(0, Math.min(value, guests - 1));
+            childrenInput.value = value;
+            adultsInput.value = Math.max(1, guests - value);
+            validateRooms(guests - value, value);
+        });
+
+        childrenInput?.addEventListener('blur', () => {
+            const guests = readValue(guestsInput, { allowEmpty: true });
+            let value = enforceBoundsOnBlur(childrenInput, 0);
+            value = Math.max(0, Math.min(value, guests - 1));
+            childrenInput.value = value;
+            adultsInput.value = Math.max(1, guests - value);
+            validateRooms(guests - value, value);
+        });
+
+        roomsInput?.addEventListener('input', () => {
+            readValue(roomsInput, { allowEmpty: true, maxValue: ROOM_LIMIT });
+            if (roomError) roomError.textContent = '';
+        });
+
+        roomsInput?.addEventListener('blur', () => {
+            enforceBoundsOnBlur(roomsInput, 1, ROOM_LIMIT);
+            validateRooms();
+        });
+
+        const ensureGuestTotalsMatch = () => {
+            if (!guestsInput || !adultsInput || !childrenInput) return true;
+            const guests = enforceBoundsOnBlur(guestsInput, 1);
+            const adults = enforceBoundsOnBlur(adultsInput, 1);
+            const children = enforceBoundsOnBlur(childrenInput, 0);
+            if (guests !== adults + children) {
+                if (guestError) guestError.textContent = 'Guests must equal Adults + Children.';
+                guestsInput.focus();
+                return false;
+            }
+            if (guestError) guestError.textContent = '';
+            distributeFromGuests(guests);
+            return true;
+        };
+
+        // Initialize defaults
+        distributeFromGuests(readValue(guestsInput) || 1);
+    </script>
+</body>
+</html>

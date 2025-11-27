@@ -1,0 +1,620 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Devbhoomi Group of Hotels</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <style>
+        body {
+            background: var(--palm-cream);
+            min-height: 100vh;
+        }
+        .dashboard-container {
+            min-height: calc(100vh - 90px);
+            padding: 2rem 0;
+        }
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1050;
+            background: linear-gradient(135deg, var(--peacock-green) 0%, var(--peacock-green-dark) 100%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        .navbar-nav {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center;
+            flex-wrap: nowrap !important;
+            gap: 0;
+        }
+        .nav-item {
+            white-space: nowrap;
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            margin: 0 8px;
+            padding: 8px 16px !important;
+        }
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white !important;
+            letter-spacing: 1px;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        .navbar-brand i {
+            color: var(--gold);
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+            font-size: 1.6rem;
+        }
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .brand-main {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        .brand-sub {
+            font-size: 0.8rem;
+            letter-spacing: 0.35rem;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            margin: 0 8px;
+            padding: 8px 16px !important;
+        }
+        .btn-login, .btn-signup {
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-left: 8px;
+        }
+        .btn-login {
+            background: transparent;
+            border: 2px solid white;
+            color: white !important;
+        }
+        .btn-signup {
+            background: var(--gold);
+            border: 2px solid var(--gold);
+            color: var(--peacock-green) !important;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .profile-card {
+            background: linear-gradient(135deg, var(--peacock-green) 0%, var(--peacock-green-dark) 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+        }
+        .profile-edit-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+        .booking-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+            height: 100%;
+        }
+        .booking-card:hover {
+            transform: translateY(-5px);
+        }
+        .booking-card.upcoming {
+            border-left: 4px solid var(--peacock-green);
+        }
+        .status-badge {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+        }
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            color: var(--peacock-green-dark);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            height: 100%;
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--peacock-green);
+            line-height: 1.2;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        .form-label {
+            font-weight: 500;
+            color: var(--peacock-green-dark);
+            margin-bottom: 0.5rem;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .profile-card .card-body {
+            padding: 2rem;
+        }
+        .profile-edit-card .card-body {
+            padding: 2rem;
+        }
+        .form-control:focus {
+            border-color: var(--peacock-green);
+            box-shadow: 0 0 0 0.2rem rgba(0, 107, 94, 0.25);
+        }
+        .btn-primary {
+            background-color: var(--peacock-green);
+            border-color: var(--peacock-green);
+        }
+        .btn-primary:hover {
+            background-color: var(--peacock-green-dark);
+            border-color: var(--peacock-green-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:index' %}">
+                <i class="fas fa-om"></i>
+                <span class="brand-text">
+                    <span class="brand-main">Devbhoomi</span>
+                    <span class="brand-sub">Group of Hotels</span>
+                </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:index' %}#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:index' %}#about-dwarka">About Dwarka</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:index' %}#top-rated-hotels">Top Rated</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:index' %}#popular-destinations">Destinations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:index' %}#contact">Contact</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'users:dashboard' %}">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-login" href="{% url 'users:logout' %}">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link btn-login" href="{% url 'users:login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-signup" href="{% url 'users:signup' %}">Sign Up</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container mt-4">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <div class="container">
+            <!-- Welcome Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="section-title mb-3">
+                        <i class="fas fa-tachometer-alt"></i> 
+                        <span>Welcome, {{ user.first_name|default:user.username }}!</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card">
+                        <i class="fas fa-calendar-check text-primary" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <div class="stats-number">{{ upcoming_bookings.count }}</div>
+                        <p class="text-muted mb-0">Upcoming Bookings</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card">
+                        <i class="fas fa-history text-secondary" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <div class="stats-number">{{ previous_bookings.count }}</div>
+                        <p class="text-muted mb-0">Previous Bookings</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card">
+                        <i class="fas fa-hotel text-success" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <div class="stats-number">{{ total_bookings }}</div>
+                        <p class="text-muted mb-0">Total Bookings</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div class="row mb-4">
+                <div class="col-lg-4 mb-4">
+                    <div class="card profile-card">
+                        <div class="card-body p-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-user-circle" style="font-size: 4rem;"></i>
+                            </div>
+                            <h3 class="card-title text-center mb-3">
+                                {{ user.get_full_name|default:user.username }}
+                            </h3>
+                            <div class="mb-2">
+                                <i class="fas fa-envelope"></i> <strong>Email:</strong><br>
+                                <span class="ms-3">{{ user.email }}</span>
+                            </div>
+                            {% if profile.phone %}
+                            <div class="mb-2">
+                                <i class="fas fa-phone"></i> <strong>Phone:</strong><br>
+                                <span class="ms-3">{{ profile.phone }}</span>
+                            </div>
+                            {% endif %}
+                            <div class="mb-2">
+                                <i class="fas fa-map"></i> <strong>Address:</strong><br>
+                                <span class="ms-3">
+                                    {% if profile.address %}
+                                        {{ profile.address }}
+                                    {% else %}
+                                        Not provided
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-map-marker-alt"></i> <strong>Location:</strong><br>
+                                <span class="ms-3">
+                                    {% if profile.city or profile.state or profile.pincode %}
+                                        {% if profile.city %}{{ profile.city }}{% endif %}
+                                        {% if profile.state %}
+                                            {% if profile.city %} - {% endif %}
+                                            {{ profile.state }}
+                                        {% endif %}
+                                        {% if profile.pincode %}
+                                            {% if profile.city or profile.state %} - {% endif %}
+                                            {{ profile.pincode }}
+                                        {% endif %}
+                                    {% else %}
+                                        Not provided
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="mt-3 text-center">
+                                <span class="badge bg-light text-dark px-3 py-2">
+                                    <i class="fas fa-check-circle"></i> Active Account
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8 mb-4">
+                    <div class="card profile-edit-card">
+                        <div class="card-body p-4">
+                            <h4 class="card-title mb-4">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </h4>
+                            <form method="post" id="profileForm" novalidate>
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="first_name" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="first_name" name="first_name" 
+                                               value="{{ user.first_name }}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="last_name" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="last_name" name="last_name" 
+                                               value="{{ user.last_name }}">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="{{ user.email }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone <small class="text-muted">(10 digits only)</small></label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                           value="{{ profile.phone }}" placeholder="Enter 10-digit phone number"
+                                           pattern="[0-9]{10}" maxlength="10" 
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                                    <small class="form-text text-muted">Enter only numbers (max 10 digits)</small>
+                                    <div class="invalid-feedback" id="phone-error"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <textarea class="form-control" id="address" name="address" rows="2" 
+                                              placeholder="Enter your address">{{ profile.address }}</textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="city" class="form-label">City</label>
+                                        <input type="text" class="form-control" id="city" name="city" 
+                                               value="{{ profile.city }}" placeholder="Enter your city">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="state" class="form-label">State</label>
+                                        <input type="text" class="form-control" id="state" name="state" 
+                                               value="{{ profile.state }}" placeholder="Enter your state">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="pincode" class="form-label">Pincode</label>
+                                    <input type="text" class="form-control" id="pincode" name="pincode" 
+                                           value="{{ profile.pincode }}" placeholder="Enter your pincode">
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Bookings -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-check"></i> 
+                        <span>Upcoming Bookings</span>
+                    </h2>
+                    {% if upcoming_bookings %}
+                        <div class="row">
+                            {% for booking in upcoming_bookings %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card booking-card upcoming">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <h5 class="card-title mb-0 flex-grow-1">
+                                                    <i class="fas fa-hotel"></i> {{ booking.hotel.name }}
+                                                </h5>
+                                                <span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %} status-badge ms-2">
+                                                    {{ booking.get_status_display }}
+                                                </span>
+                                            </div>
+                                            <p class="card-text mb-2">
+                                                <i class="fas fa-id-badge"></i> <strong>Booking ID:</strong> {{ booking.booking_id }}
+                                            </p>
+                                            <p class="card-text mb-2">
+                                                <i class="fas fa-calendar-alt"></i> <strong>Check-in:</strong> {{ booking.check_in|date:"M d, Y" }}
+                                            </p>
+                                            <p class="card-text mb-2">
+                                                <i class="fas fa-calendar-check"></i> <strong>Check-out:</strong> {{ booking.check_out|date:"M d, Y" }}
+                                            </p>
+                                            <p class="card-text mb-2">
+                                                <i class="fas fa-moon"></i> <strong>Nights:</strong> {{ booking.nights }}
+                                            </p>
+                                            <p class="card-text mb-2">
+                                                <i class="fas fa-bed"></i> <strong>Room:</strong> {{ booking.room_type.name }}
+                                            </p>
+                                            <p class="card-text mb-2">
+                                                <i class="fas fa-users"></i> <strong>Guests:</strong> {{ booking.num_adults }} Adult{{ booking.num_adults|pluralize }}{% if booking.num_children %}, {{ booking.num_children }} Child{{ booking.num_children|pluralize }}{% endif %}
+                                            </p>
+                                            <hr>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <p class="card-text mb-0">
+                                                    <strong class="text-primary">Total: ₹{{ booking.total_amount|floatformat:2 }}</strong>
+                                                </p>
+                                                {% if booking.payment_status == 'paid' %}
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check-circle"></i> Paid
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">
+                                                        <i class="fas fa-clock"></i> Pending
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-times"></i>
+                            <h4>No Upcoming Bookings</h4>
+                            <p>You don't have any upcoming bookings. Start exploring our hotels!</p>
+                            <a href="{% url 'core:index' %}#top-rated-hotels" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Browse Hotels
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Previous Bookings -->
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="section-title">
+                        <i class="fas fa-history"></i> 
+                        <span>Previous Bookings</span>
+                    </h2>
+                    {% if previous_bookings %}
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th><i class="fas fa-id-badge"></i> Booking ID</th>
+                                            <th><i class="fas fa-hotel"></i> Hotel</th>
+                                            <th><i class="fas fa-calendar-alt"></i> Check-in</th>
+                                            <th><i class="fas fa-calendar-check"></i> Check-out</th>
+                                            <th><i class="fas fa-bed"></i> Room</th>
+                                            <th><i class="fas fa-rupee-sign"></i> Amount</th>
+                                            <th><i class="fas fa-info-circle"></i> Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for booking in previous_bookings %}
+                                            <tr>
+                                                <td><strong>{{ booking.booking_id }}</strong></td>
+                                                <td>{{ booking.hotel.name }}</td>
+                                                <td>{{ booking.check_in|date:"M d, Y" }}</td>
+                                                <td>{{ booking.check_out|date:"M d, Y" }}</td>
+                                                <td>{{ booking.room_type.name }}</td>
+                                                <td>₹{{ booking.total_amount|floatformat:2 }}</td>
+                                                <td>
+                                                    <span class="badge {% if booking.status == 'completed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                                        {{ booking.get_status_display }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <h4>No Previous Bookings</h4>
+                            <p>Your booking history will appear here once you make your first booking.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Phone number validation
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let phone = e.target.value;
+            // Remove any non-numeric characters
+            phone = phone.replace(/[^0-9]/g, '');
+            // Limit to 10 digits
+            if (phone.length > 10) {
+                phone = phone.substring(0, 10);
+            }
+            e.target.value = phone;
+            
+            // Validate and show error
+            const phoneError = document.getElementById('phone-error');
+            if (phone.length > 0 && phone.length !== 10) {
+                e.target.classList.add('is-invalid');
+                phoneError.textContent = 'Phone number must be exactly 10 digits';
+            } else {
+                e.target.classList.remove('is-invalid');
+                phoneError.textContent = '';
+            }
+        });
+
+        // Form validation on submit
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            const phoneInput = document.getElementById('phone');
+            const phone = phoneInput.value.trim();
+            
+            // Check if phone is provided and validate length
+            if (phone && phone.length !== 10) {
+                e.preventDefault();
+                phoneInput.classList.add('is-invalid');
+                document.getElementById('phone-error').textContent = 'Phone number must be exactly 10 digits';
+                phoneInput.focus();
+                return false;
+            }
+            
+            // Check if phone contains only numbers
+            if (phone && !/^[0-9]{10}$/.test(phone)) {
+                e.preventDefault();
+                phoneInput.classList.add('is-invalid');
+                document.getElementById('phone-error').textContent = 'Phone number must contain only numbers';
+                phoneInput.focus();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

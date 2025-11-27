@@ -1,0 +1,512 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotels in Dwarka - Search Results | Devbhoomi Group of Hotels</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <link rel="stylesheet" href="{% static 'css/global.css' %}">
+
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:index' %}">
+                <i class="fas fa-om"></i>
+                <span class="brand-text">
+                    <span class="brand-main">Devbhoomi</span>
+                    <span class="brand-sub">Group of Hotels</span>
+                </span>
+            </a>
+            <div class="ms-auto">
+                <a href="{% url 'core:index' %}" class="btn-home">
+                    <i class="fas fa-home me-2"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Summary -->
+    <section class="search-summary">
+        <div class="container">
+            <div class="search-info" id="searchSummary">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section">
+        <div class="container">
+            <!-- Mobile Filter Button -->
+            <div class="mobile-filter-btn">
+                <button class="btn-filter-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                    <i class="fas fa-filter me-2"></i>Show Filters
+                </button>
+            </div>
+
+            <div class="row">
+                <!-- Filter Sidebar -->
+                <div class="col-lg-3">
+                    <div class="collapse d-lg-block" id="filterCollapse">
+                        <div class="filter-card">
+                            <h3 class="filter-title">
+                                <i class="fas fa-sliders-h me-2"></i>Filters
+                            </h3>
+
+                            <!-- Price Range -->
+                            <div class="filter-section">
+                                <h5 class="filter-section-title">Price Range (per night)</h5>
+                                <div class="price-inputs">
+                                    <div class="price-input">
+                                        <label>Min</label>
+                                        <input type="number" id="priceMin" placeholder="₹500" value="500">
+                                    </div>
+                                    <span>-</span>
+                                    <div class="price-input">
+                                        <label>Max</label>
+                                        <input type="number" id="priceMax" placeholder="₹10000" value="10000">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Star Rating -->
+                            <div class="filter-section">
+                                <h5 class="filter-section-title">Star Rating</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input filter-star" type="checkbox" id="star5" data-value="5">
+                                    <label class="form-check-label" for="star5">
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="fas fa-star star-icon"></i>
+                                        5 Star
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter-star" type="checkbox" id="star4" data-value="4">
+                                    <label class="form-check-label" for="star4">
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="far fa-star star-icon"></i>
+                                        4 Star
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter-star" type="checkbox" id="star3" data-value="3">
+                                    <label class="form-check-label" for="star3">
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="fas fa-star star-icon"></i>
+                                        <i class="far fa-star star-icon"></i>
+                                        <i class="far fa-star star-icon"></i>
+                                        3 Star
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter-star" type="checkbox" id="star2" data-value="2">
+                                    <label class="form-check-label" for="star2">
+                                        2 Star & Below
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Amenities -->
+                            <div class="filter-section">
+                                <h5 class="filter-section-title">Amenities</h5>
+                                {% for amenity in all_amenities %}
+                                <div class="form-check">
+                                    <input class="form-check-input filter-amenity" type="checkbox" id="amenity{{ amenity.id }}" data-value="{{ amenity.id }}">
+                                    <label class="form-check-label" for="amenity{{ amenity.id }}">
+                                        <i class="fas {{ amenity.icon }} me-2"></i>{{ amenity.name }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Property Type -->
+                            <div class="filter-section">
+                                <h5 class="filter-section-title">Property Type</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input filter-property" type="checkbox" id="hotel" data-value="hotel">
+                                    <label class="form-check-label" for="hotel">
+                                        <i class="fas fa-hotel me-2"></i>Hotel
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter-property" type="checkbox" id="resort" data-value="resort">
+                                    <label class="form-check-label" for="resort">
+                                        <i class="fas fa-umbrella-beach me-2"></i>Resort
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter-property" type="checkbox" id="guesthouse" data-value="guesthouse">
+                                    <label class="form-check-label" for="guesthouse">
+                                        <i class="fas fa-home me-2"></i>Guest House
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter-property" type="checkbox" id="homestay" data-value="homestay">
+                                    <label class="form-check-label" for="homestay">
+                                        <i class="fas fa-house-user me-2"></i>Homestay
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Filter Actions -->
+                            <div class="filter-actions">
+                                <button class="btn-clear" type="button" id="clearFilters">Clear All</button>
+                                <button class="btn-apply" type="button" id="applyFilters">Apply Filters</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotel Listings -->
+                <div class="col-lg-9">
+                    <!-- Results Header -->
+                    <div class="results-header">
+                        <div class="results-count">
+                            <span id="resultsCount"><strong>{{ hotels_count }} hotel{{ hotels_count|pluralize }}</strong> found in Dwarka</span>
+                        </div>
+                        <select class="sort-select" id="sortSelect">
+                            <option value="recommended">Sort by: Recommended</option>
+                            <option value="priceLowHigh">Price: Low to High</option>
+                            <option value="priceHighLow">Price: High to Low</option>
+                            <option value="ratingHighLow">Rating: High to Low</option>
+                            <option value="distance">Distance from Temple</option>
+                        </select>
+                    </div>
+
+                    <!-- Hotel Cards -->
+                    <div id="hotelCards" class="hotel-cards-list">
+                        {% for hotel in hotel_cards %}
+                        <div class="hotel-card">
+                            <div class="hotel-card-horizontal">
+                                <div class="hotel-image-container">
+                                    <img src="{{ hotel.img }}" alt="{{ hotel.name }}">
+                                    {% if hotel.badge %}<div class="hotel-badge">{{ hotel.badge }}</div>{% endif %}
+                                </div>
+                                <div class="hotel-content">
+                                    <div class="hotel-header">
+                                        <a href="{{ hotel.link }}" class="hotel-name">{{ hotel.name }}</a>
+                                        <div class="hotel-rating">
+                                            <div class="rating-stars">
+                                                {% for i in "12345"|make_list %}
+                                                    {% if hotel.rating|floatformat:1 >= i %}<i class="fas fa-star"></i>
+                                                    {% elif hotel.rating|floatformat:1 >= i|add:"-0.5" %}<i class="fas fa-star-half-alt"></i>
+                                                    {% else %}<i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <div class="rating-score">{{ hotel.rating|floatformat:1 }}</div>
+                                            <div class="review-count">({{ hotel.reviews }} reviews)</div>
+                                        </div>
+                                        <div class="hotel-location">
+                                            <i class="fas fa-map-marker-alt"></i> {{ hotel.distanceLabel }}
+                                        </div>
+                                    </div>
+                                    <p class="hotel-description">{{ hotel.description }}</p>
+                                    <div class="hotel-amenities">
+                                        {% for feature in hotel.features %}
+                                        <span class="amenity-badge">
+                                            <i class="{{ feature.icon }}"></i> {{ feature.label }}
+                                        </span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="hotel-footer">
+                                        <div class="hotel-price-section">
+                                            <div class="price-label">Starting from</div>
+                                            <div>
+                                                <span class="hotel-price">₹{{ hotel.price|floatformat:0 }}<span>/night</span></span>
+                                                {% if hotel.originalPrice and hotel.originalPrice > hotel.price %}<span class="original-price">₹{{ hotel.originalPrice|floatformat:0 }}</span>{% endif %}
+                                            </div>
+                                            {% if hotel.discountLabel %}<div class="discount-label">{{ hotel.discountLabel }}</div>{% endif %}
+                                        </div>
+                                        <a href="{{ hotel.link }}" class="btn-view-details">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div id="noResults" class="no-results">
+                            <i class="fas fa-search"></i>
+                            <h3>No hotels match your filters</h3>
+                            <p>Try adjusting the price range or selecting fewer amenities to see more stays.</p>
+                            <a href="{% url 'hotels:search' %}" class="btn-apply">Show All Hotels</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div id="noResults" class="no-results d-none">
+                        <i class="fas fa-search"></i>
+                        <h3>No hotels match your filters</h3>
+                        <p>Try adjusting the price range or selecting fewer amenities to see more stays.</p>
+                        <button class="btn-apply" type="button" id="exploreAll">Show All Hotels</button>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Hotel results pagination" class="mt-5">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" style="color: var(--peacock-green); border-color: var(--peacock-green);">Previous</a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link" href="#" style="background-color: var(--peacock-green); border-color: var(--peacock-green);">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#" style="color: var(--peacock-green); border-color: var(--peacock-green);">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#" style="color: var(--peacock-green); border-color: var(--peacock-green);">3</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#" style="color: var(--peacock-green); border-color: var(--peacock-green);">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5><i class="fas fa-om me-2"></i>Devbhoomi Group of Hotels</h5>
+                    <p>Your trusted partner for spiritual journeys and comfortable stays in the holy city of Dwarka.</p>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">About Dwarka</a></li>
+                        <li><a href="#">Hotels</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Popular Hotels</h5>
+                    <ul>
+                        <li><a href="#">Krishna Heritage Hotel</a></li>
+                        <li><a href="#">Gomti Ghat Resort</a></li>
+                        <li><a href="#">Divine Palace Hotel</a></li>
+                        <li><a href="#">View All Hotels</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Legal</h5>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Use</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2025 Devbhoomi Group of Hotels. All rights reserved. | Designed with <i class="fas fa-heart" style="color: var(--gold);"></i> for Pilgrims</p>
+            </div>
+        </div>
+    </footer>
+
+    {{ hotel_cards|json_script:"hotel-data" }}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const summaryContainer = document.getElementById('searchSummary');
+            if (summaryContainer) {
+                const params = new URLSearchParams(window.location.search);
+                const items = [
+                    { icon: 'fa-map-marker-alt', label: 'Location', value: params.get('location') || 'Dwarka, Gujarat' },
+                    { icon: 'fa-calendar', label: 'Check-in', value: params.get('checkIn') },
+                    { icon: 'fa-calendar', label: 'Check-out', value: params.get('checkOut') },
+                    { icon: 'fa-users', label: 'Guests', value: params.get('guests') },
+                    { icon: 'fa-user', label: 'Adults', value: params.get('adults') },
+                    { icon: 'fa-child', label: 'Children', value: params.get('children') },
+                    { icon: 'fa-door-open', label: 'Rooms', value: params.get('rooms') }
+                ].filter(item => item.value);
+
+                summaryContainer.innerHTML = items.map(item => `
+                    <div class="search-item">
+                        <i class="fas ${item.icon}"></i>
+                        <span>${item.label}: <strong>${item.value}</strong></span>
+                    </div>
+                `).join('');
+
+                const modifyButton = document.createElement('button');
+                modifyButton.className = 'btn-modify ms-auto';
+                modifyButton.innerHTML = '<i class="fas fa-edit me-2"></i>Modify Search';
+                modifyButton.addEventListener('click', () => history.back());
+                summaryContainer.appendChild(modifyButton);
+            }
+
+            const hotelDataElement = document.getElementById('hotel-data');
+            const dynamicHotels = hotelDataElement ? JSON.parse(hotelDataElement.textContent) : [];
+            // No fallbackHotels array: all hotels are rendered from hotel_cards context.
+
+
+            const baseHotels = dynamicHotels.length ? dynamicHotels : fallbackHotels;
+
+            const DEFAULT_PRICE_RANGE = { min: 500, max: 10000 };
+            const priceMinInput = document.getElementById('priceMin');
+            const priceMaxInput = document.getElementById('priceMax');
+            const starFilters = document.querySelectorAll('.filter-star');
+            const amenityFilters = document.querySelectorAll('.filter-amenity');
+            const propertyFilters = document.querySelectorAll('.filter-property');
+            const applyButton = document.getElementById('applyFilters');
+            const clearButton = document.getElementById('clearFilters');
+            const exploreAllButton = document.getElementById('exploreAll');
+            const sortSelect = document.getElementById('sortSelect');
+            const hotelCards = document.getElementById('hotelCards');
+            const noResults = document.getElementById('noResults');
+            const resultsCount = document.getElementById('resultsCount');
+
+            let filteredHotels = [...baseHotels];
+
+            const getNumber = (input, fallback) => {
+                const value = parseInt(input.value, 10);
+                return Number.isNaN(value) ? fallback : value;
+            };
+
+            const getCheckedValues = nodeList => [...nodeList].filter(el => el.checked).map(el => el.dataset.value);
+
+            const buildStars = rating => {
+                const fullStars = Math.floor(rating);
+                const hasHalf = rating - fullStars >= 0.5;
+                const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
+                return `${'<i class="fas fa-star"></i>'.repeat(fullStars)}${hasHalf ? '<i class="fas fa-star-half-alt"></i>' : ''}${'<i class="far fa-star"></i>'.repeat(Math.max(emptyStars, 0))}`;
+            };
+
+            const formatPrice = value => `₹${value.toLocaleString('en-IN')}`;
+
+            const renderHotels = list => {
+                if (!hotelCards) return;
+                if (list.length === 0) {
+                    hotelCards.innerHTML = '';
+                    noResults?.classList.remove('d-none');
+                    resultsCount.innerHTML = '<strong>0 hotels</strong> found in Dwarka';
+                    return;
+                }
+
+                noResults?.classList.add('d-none');
+                hotelCards.innerHTML = list.map(hotel => `
+                    <div class="hotel-card">
+                        <div class="hotel-card-horizontal">
+                            <div class="hotel-image-container">
+                                <img src="${hotel.img}" alt="${hotel.name}">
+                                ${hotel.badge ? `<div class="hotel-badge">${hotel.badge}</div>` : ''}
+                            </div>
+                            <div class="hotel-content">
+                                <div class="hotel-header">
+                                    <a href="${hotel.link}" class="hotel-name">${hotel.name}</a>
+                                    <div class="hotel-rating">
+                                        <div class="rating-stars">${buildStars(hotel.rating)}</div>
+                                        <div class="rating-score">${hotel.rating.toFixed(1)}</div>
+                                        <div class="review-count">(${hotel.reviews} reviews)</div>
+                                    </div>
+                                    <div class="hotel-location">
+                                        <i class="fas fa-map-marker-alt"></i> ${hotel.distanceLabel}
+                                    </div>
+                                </div>
+                                <p class="hotel-description">${hotel.description}</p>
+                                <div class="hotel-amenities">
+                                    ${hotel.features.map(feature => `
+                                        <span class="amenity-badge">
+                                            <i class="${feature.icon}"></i> ${feature.label}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                                <div class="hotel-footer">
+                                    <div class="hotel-price-section">
+                                        <div class="price-label">Starting from</div>
+                                        <div>
+                                            <span class="hotel-price">${formatPrice(hotel.price)}<span>/night</span></span>
+                                            ${hotel.originalPrice ? `<span class="original-price">${formatPrice(hotel.originalPrice)}</span>` : ''}
+                                        </div>
+                                        ${hotel.discountLabel ? `<div class="discount-label">${hotel.discountLabel}</div>` : ''}
+                                    </div>
+                                    <a href="${hotel.link}" class="btn-view-details">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                resultsCount.innerHTML = `<strong>${list.length} hotel${list.length === 1 ? '' : 's'}</strong> found in Dwarka`;
+            };
+
+            const sortHotels = list => {
+                const sorted = [...list];
+                switch (sortSelect?.value) {
+                    case 'priceLowHigh':
+                        return sorted.sort((a, b) => a.price - b.price);
+                    case 'priceHighLow':
+                        return sorted.sort((a, b) => b.price - a.price);
+                    case 'ratingHighLow':
+                        return sorted.sort((a, b) => b.rating - a.rating);
+                    case 'distance':
+                        return sorted.sort((a, b) => a.distance - b.distance);
+                    default:
+                        return sorted.sort((a, b) => a.order - b.order);
+                }
+            };
+
+            const applyFilters = () => {
+                const minPrice = getNumber(priceMinInput, DEFAULT_PRICE_RANGE.min);
+                const maxPrice = getNumber(priceMaxInput, DEFAULT_PRICE_RANGE.max);
+                const selectedStars = getCheckedValues(starFilters).map(Number);
+                const selectedAmenities = getCheckedValues(amenityFilters);
+                const selectedProperties = getCheckedValues(propertyFilters);
+
+                filteredHotels = baseHotels.filter(hotel => {
+                    const withinPrice = hotel.price >= minPrice && hotel.price <= maxPrice;
+                    const roundedRating = Math.round(hotel.rating);
+                    const matchesStar = selectedStars.length === 0 || selectedStars.some(value => value === roundedRating || (value === 2 && roundedRating <= 2));
+                    const matchesAmenities = selectedAmenities.length === 0 || selectedAmenities.every(amenity => hotel.amenities.includes(amenity));
+                    const matchesProperty = selectedProperties.length === 0 || selectedProperties.includes(hotel.propertyType);
+                    return withinPrice && matchesStar && matchesAmenities && matchesProperty;
+                });
+
+                renderHotels(sortHotels(filteredHotels));
+            };
+
+            const resetFilters = () => {
+                if (priceMinInput) priceMinInput.value = DEFAULT_PRICE_RANGE.min;
+                if (priceMaxInput) priceMaxInput.value = DEFAULT_PRICE_RANGE.max;
+                [...starFilters, ...amenityFilters, ...propertyFilters].forEach(input => {
+                    input.checked = false;
+                });
+            };
+
+            sortSelect?.addEventListener('change', () => renderHotels(sortHotels(filteredHotels)));
+            applyButton?.addEventListener('click', applyFilters);
+            clearButton?.addEventListener('click', () => {
+                resetFilters();
+                filteredHotels = [...baseHotels];
+            renderHotels(sortHotels(filteredHotels));
+            });
+            exploreAllButton?.addEventListener('click', () => {
+                resetFilters();
+                applyFilters();
+            });
+
+            applyFilters();
+        });
+    </script>
+</body>
+</html>
