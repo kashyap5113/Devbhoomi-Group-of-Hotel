@@ -155,7 +155,19 @@
                         <div class="detail-meta">
                             <div class="detail-meta-item">
                                 Rating
-                                <span><i class="fas fa-star text-warning"></i> {{ hotel.rating|default:"-" }}</span>
+                                <span>
+    {% if dynamic_rating %}
+        {% for i in "12345"|make_list %}
+            {% if dynamic_rating|floatformat:1 >= i %}<i class="fas fa-star text-warning"></i>
+            {% elif dynamic_rating|floatformat:1 >= i|add:"-0.5" %}<i class="fas fa-star-half-alt text-warning"></i>
+            {% else %}<i class="far fa-star text-warning"></i>
+            {% endif %}
+        {% endfor %}
+        {{ dynamic_rating }} / 5
+    {% else %}
+        -
+    {% endif %}
+</span>
                             </div>
                             <div class="detail-meta-item">
                                 Reviews
@@ -185,23 +197,95 @@
                         </div>
                     </div>
 
-                    {% if reviews %}
-                    <div class="detail-card">
-                        <h3 class="h5 fw-bold mb-4">Recent Experiences</h3>
-                        <div class="list-group list-group-flush">
-                            {% for review in reviews %}
-                            <div class="list-group-item px-0">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="fw-semibold">{{ review.guest_name }}</div>
-                                    <span class="badge bg-success"><i class="fas fa-star me-1"></i>{{ review.rating }} / 5</span>
-                                </div>
-                                <p class="mb-1 text-muted">{{ review.comment|truncatewords:30 }}</p>
-                                <small class="text-secondary">Stayed on {{ review.stay_date|date:"F Y" }}</small>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
+                    <div class="detail-card mt-4 mb-4">
+    <h3 class="h5 fw-bold mb-4">Rate & Review Your Stay</h3>
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Your Name</label>
+            <input type="text" name="guest_name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Your Rating</label>
+            <select name="rating" class="form-select" required>
+                <option value="">Select Rating</option>
+                {% for i in "54321"|make_list %}
+                <option value="{{ i }}">{{ i }} Star{% if i != '1' %}s{% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Your Review</label>
+            <textarea name="comment" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Stay Date</label>
+            <input type="date" name="stay_date" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success">Submit Review</button>
+    </form>
+</div>
+{% if all_reviews %}
+    <div class="detail-card mt-4">
+        <h3 class="h5 fw-bold mb-4">User Reviews</h3>
+        <div class="list-group list-group-flush">
+            {% for review in all_reviews %}
+            <div class="list-group-item px-0">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="fw-semibold">{{ review.guest_name }}</div>
+        <div class="d-flex align-items-center gap-2">
+    <button type="button" class="btn btn-search btn-sm rounded-pill fw-semibold px-4 py-1" style="background: var(--peacock-green); color: #fff; border: none;" title="Edit Review" onclick="document.getElementById('edit-form-{{ review.id }}').style.display='block'">
+    <i class="fas fa-edit me-2"></i>Edit
+</button>
+<form method="post" action="" style="display:inline;">
+    {% csrf_token %}
+    <input type="hidden" name="delete_review_id" value="{{ review.id }}">
+    <button type="submit" class="btn btn-search btn-sm rounded-pill fw-semibold px-4 py-1" style="background: var(--peacock-green); color: #fff; border: none;" title="Delete Review" onclick="return confirm('Delete this review?');">
+        <i class="fas fa-trash me-2"></i>Delete
+    </button>
+</form>
+</div>
+<div id="edit-form-{{ review.id }}" style="display:none; margin-top:10px;">
+    <form method="post" action="">
+        {% csrf_token %}
+        <input type="hidden" name="edit_review_id" value="{{ review.id }}">
+        <div class="mb-2">
+            <label class="form-label">Rating</label>
+            <select name="edit_rating" class="form-select" required>
+                {% for i in "54321"|make_list %}
+                <option value="{{ i }}" {% if review.rating|stringformat:'s' == i %}selected{% endif %}>{{ i }} Star{% if i != '1' %}s{% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-2">
+            <label class="form-label">Review</label>
+            <textarea name="edit_comment" class="form-control" rows="2" required>{{ review.comment }}</textarea>
+        </div>
+        <div class="mb-2">
+            <label class="form-label">Stay Date</label>
+            <input type="date" name="edit_stay_date" class="form-control" value="{{ review.stay_date }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('edit-form-{{ review.id }}').style.display='none'">Cancel</button>
+    </form>
+</div>
+        <span class="badge bg-success">
+                        {% for i in "12345"|make_list %}
+                            {% if review.rating >= i|add:"0" %}<i class="fas fa-star"></i>
+                            {% elif review.rating >= i|add:"-0.5" %}<i class="fas fa-star-half-alt"></i>
+                            {% else %}<i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                        {{ review.rating }} / 5
+                    </span>
+                </div>
+                <p class="mb-1 text-muted">{{ review.comment|linebreaksbr }}</p>
+                <small class="text-secondary">Stayed on {{ review.stay_date|date:"F Y" }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
                 </div>
 
                 <div class="col-lg-4">

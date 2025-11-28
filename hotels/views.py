@@ -110,7 +110,7 @@ def search_hotels(request):
             "originalPrice": float(hotel.base_price or 0),
             "discountLabel": discount_label,
             "img": hotel.main_image.url if getattr(hotel.main_image, 'url', None) else default_image,
-            "link": reverse('bookings:booking_page', args=[hotel.slug]),
+            "link": reverse('hotels:details', args=[hotel.slug]),
             "propertyType": hotel.property_type,
             "amenities": amenities_list,
             "features": features,
@@ -147,17 +147,75 @@ def search_hotels(request):
 def hotel_details(request, slug):
     """Hotel details page"""
     hotel = get_object_or_404(Hotel, slug=slug, is_active=True)
-    reviews = Review.objects.filter(hotel=hotel, is_approved=True)[:10]
+
+    # Handle review submission
+    if request.method == 'POST':
+        delete_review_id = request.POST.get('delete_review_id')
+        if delete_review_id:
+            Review.objects.filter(id=delete_review_id, hotel=hotel).delete()
+            from django.shortcuts import redirect
+            return redirect(request.path)
+        edit_review_id = request.POST.get('edit_review_id')
+        if edit_review_id:
+            review = Review.objects.filter(id=edit_review_id, hotel=hotel).first()
+            if review:
+                review.rating = int(request.POST.get('edit_rating'))
+                review.comment = request.POST.get('edit_comment')
+                review.stay_date = request.POST.get('edit_stay_date')
+                review.save(update_fields=["rating", "comment", "stay_date"])
+            from django.shortcuts import redirect
+            return redirect(request.path)
+        guest_name = request.POST.get('guest_name')
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        stay_date = request.POST.get('stay_date')
+        if guest_name and rating and comment and stay_date:
+            Review.objects.create(
+                hotel=hotel,
+                guest_name=guest_name,
+                rating=int(rating),
+                comment=comment,
+                stay_date=stay_date,
+                is_approved=True
+            )
+            from django.shortcuts import redirect
+            return redirect(request.path)
+
+    all_reviews = Review.objects.filter(hotel=hotel, is_approved=True)
+    reviews = all_reviews[:10]
     room_types = hotel.room_types.filter(is_available=True)
     related_hotels = Hotel.objects.filter(
         is_active=True
     ).exclude(id=hotel.id)[:3]
-    
+    gallery_images = hotel.images.all()
+    amenities = hotel.amenities.all()
+    from django.urls import reverse
+    booking_url = reverse('bookings:booking_page', args=[hotel.slug])
+
+    # Calculate dynamic average rating and update hotel.rating
+    if all_reviews.exists():
+        dynamic_rating = round(sum(r.rating for r in all_reviews) / all_reviews.count(), 2)
+        if hotel.rating != dynamic_rating:
+            hotel.rating = dynamic_rating
+            hotel.total_reviews = all_reviews.count()
+            hotel.save(update_fields=["rating", "total_reviews"])
+    else:
+        dynamic_rating = None
+        if hotel.rating != 0:
+            hotel.rating = 0
+            hotel.total_reviews = 0
+            hotel.save(update_fields=["rating", "total_reviews"])
+
     context = {
         'hotel': hotel,
         'reviews': reviews,
         'room_types': room_types,
         'related_hotels': related_hotels,
+        'gallery_images': gallery_images,
+        'amenities': amenities,
+        'booking_url': booking_url,
+        'dynamic_rating': dynamic_rating,
+        'all_reviews': all_reviews,
     }
     
     return render(request, 'hotels/hotel_details.html', context)
