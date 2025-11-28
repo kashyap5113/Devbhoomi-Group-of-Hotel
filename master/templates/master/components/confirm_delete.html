@@ -1,0 +1,16 @@
+{% extends "master/base.html" %}
+{% block title %}Confirm Delete{% endblock %}
+{% block page_heading %}Delete Confirmation{% endblock %}
+{% block content %}
+<section class="form-card confirm-card">
+    <h2 class="chart-title mb-3">Are you sure?</h2>
+    <p class="text-muted mb-4">This will permanently remove {{ entity_label|default:"this item" }}.</p>
+    <form method="post" class="flex flex-col gap-4">
+        {% csrf_token %}
+        <div class="flex justify-center gap-3">
+            <a href="{{ back_url|default:request.META.HTTP_REFERER }}" class="btn btn-outline-peach">Cancel</a>
+            <button type="submit" class="btn btn-peach">Yes, delete</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

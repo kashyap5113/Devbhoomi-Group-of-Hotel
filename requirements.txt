@@ -8,7 +8,7 @@
 Django==4.2.7
 
 # Image Processing (for hotel images, profile pictures)
-Pillow==10.1.0
+Pillow==11.0.0
 
 # Optional but recommended packages:
 
@@ -37,6 +37,9 @@ django-cors-headers==4.3.1
 # For production deployment
 gunicorn==21.2.0
 whitenoise==6.6.0
+
+# For Time-based One-Time Password (2FA)
+pyotp==2.9.0
 
 # For PostgreSQL (if switching from SQLite)
 # psycopg2-binary==2.9.9

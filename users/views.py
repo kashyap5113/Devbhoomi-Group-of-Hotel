@@ -2,16 +2,19 @@
 Users app views - Login, Signup, Profile
 """
 
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+import pyotp
+
 from django.contrib import messages
-from django.utils import timezone
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db.models import Q
-from .models import UserProfile
-from .forms import LoginForm, SignupForm
+from django.shortcuts import redirect, render
+from django.utils import timezone
+
 from bookings.models import Booking
+from .forms import LoginForm, OTPVerificationForm, SignupForm
+from .models import UserProfile
 
 def user_login(request):
     """User login view"""
@@ -20,10 +23,13 @@ def user_login(request):
     if request.method == 'POST':
         if form.is_valid():
             user = form.get_user()
+            request.session['post_auth_next'] = request.GET.get('next', 'core:index')
+            request.session['post_auth_user_id'] = user.id
+            if hasattr(user, 'profile') and user.profile.otp_enabled:
+                return redirect('users:otp-verify')
             login(request, user)
             messages.success(request, f"Welcome back, {user.first_name or user.username}!")
-            next_url = request.GET.get('next', 'core:index')
-            return redirect(next_url)
+            return redirect(request.session.pop('post_auth_next', 'core:index'))
         else:
             messages.error(request, 'Please fix the errors below to continue.')
 
@@ -31,6 +37,67 @@ def user_login(request):
         'form': form,
     }
     return render(request, 'users/login.html', context)
+
+
+@login_required
+def otp_setup(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    if not profile.otp_secret:
+        profile.otp_secret = pyotp.random_base32()
+        profile.save()
+
+    otp_uri = pyotp.totp.TOTP(profile.otp_secret).provisioning_uri(
+        name=request.user.email or request.user.username,
+        issuer_name="Dwarka Getaways"
+    )
+
+    if request.method == 'POST':
+        form = OTPVerificationForm(request.POST)
+        if form.is_valid():
+            totp = pyotp.TOTP(profile.otp_secret)
+            if totp.verify(form.cleaned_data['token']):
+                profile.otp_enabled = True
+                profile.otp_last_verified = timezone.now()
+                profile.save()
+                messages.success(request, 'Two-factor authentication enabled!')
+                return redirect('users:dashboard')
+            messages.error(request, 'Invalid code. Try again.')
+    else:
+        form = OTPVerificationForm()
+
+    return render(
+        request,
+        'users/otp_setup.html',
+        {
+            'profile': profile,
+            'otp_uri': otp_uri,
+            'form': form,
+        },
+    )
+
+
+def otp_verify(request):
+    user_id = request.session.get('post_auth_user_id')
+    if not user_id:
+        return redirect('users:login')
+
+    user = User.objects.filter(id=user_id).first()
+    if not user or not hasattr(user, 'profile') or not user.profile.otp_enabled:
+        return redirect('users:login')
+
+    form = OTPVerificationForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        totp = pyotp.TOTP(user.profile.otp_secret)
+        if totp.verify(form.cleaned_data['token']):
+            login(request, user)
+            user.profile.otp_last_verified = timezone.now()
+            user.profile.save()
+            request.session.pop('post_auth_user_id', None)
+            messages.success(request, 'OTP verified successfully.')
+            return redirect(request.session.pop('post_auth_next', 'core:index'))
+        messages.error(request, 'Invalid code. Please try again.')
+
+    return render(request, 'users/otp_verify.html', {'form': form})
 
 
 def user_signup(request):

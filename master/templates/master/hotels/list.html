@@ -1,0 +1,116 @@
+{% extends "master/base.html" %}
+{% block title %}Hotels · Dwarka Master{% endblock %}
+{% block page_heading %}Hotels{% endblock %}
+{% block content %}
+<section class="flex flex-col gap-6">
+    <div class="stat-card">
+        <form method="get" class="grid gap-4 md:grid-cols-4">
+            <div>
+                <label class="text-xs uppercase tracking-[0.2em] text-muted mb-2 block">Search</label>
+                <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Hotel name or address" class="form-control form-control-dark">
+            </div>
+            <div>
+                <label class="text-xs uppercase tracking-[0.2em] text-muted mb-2 block">Status</label>
+                <select name="status" class="form-select">
+                    <option value="" {% if not request.GET.status %}selected{% endif %}>All</option>
+                    <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs uppercase tracking-[0.2em] text-muted mb-2 block">City</label>
+                <input type="text" name="city" value="{{ request.GET.city }}" placeholder="e.g. Dwarka" class="form-control form-control-dark">
+            </div>
+            <div class="flex items-end gap-3">
+                <button type="submit" class="btn btn-peach w-full">Filter</button>
+                <a href="{% url 'master:hotels' %}" class="btn btn-outline-peach">Reset</a>
+            </div>
+        </form>
+        <div class="flex items-center justify-between mt-6">
+            <p class="text-sm text-muted">Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} hotels</p>
+            {% if perms.hotels.add_hotel %}
+            <a href="{% url 'master:hotel-create' %}" class="btn btn-peach">Create Hotel</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Hotel</th>
+                        <th>City</th>
+                        <th>Base Price</th>
+                        <th>Rating</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hotel in hotels %}
+                    <tr>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                {% if hotel.main_image %}
+                                <img src="{{ hotel.main_image.url }}" alt="{{ hotel.name }}" class="rounded-2" style="width:56px;height:56px;object-fit:cover;">
+                                {% else %}
+                                <div class="rounded-2 bg-night-3" style="width:56px;height:56px;display:grid;place-items:center;">🏨</div>
+                                {% endif %}
+                                <div>
+                                    <p class="fw-semibold">{{ hotel.name }}</p>
+                                    <p class="text-sm text-muted">{{ hotel.address|truncatechars:45 }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ hotel.city }}</td>
+                        <td>₹{{ hotel.base_price }} / night</td>
+                        <td>
+                            <span class="badge-status badge-active">{{ hotel.rating }} ★</span>
+                            <p class="text-xs text-muted mt-1">{{ hotel.total_reviews }} reviews</p>
+                        </td>
+                        <td>
+                            {% if hotel.is_active %}
+                                <span class="badge-status badge-active">Active</span>
+                            {% else %}
+                                <span class="badge-status badge-inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                {% if perms.hotels.change_hotel %}
+                                <a href="{% url 'master:hotel-edit' hotel.pk %}" class="btn btn-outline-peach">Edit</a>
+                                {% endif %}
+                                {% if perms.hotels.view_roomtype %}
+                                <a href="{% url 'master:hotel-rooms' hotel.pk %}" class="btn btn-outline-peach">Rooms</a>
+                                {% endif %}
+                                {% if perms.hotels.delete_hotel %}
+                                <a href="{% url 'master:hotel-delete' hotel.pk %}" class="btn btn-outline-peach">Delete</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">No hotels match the filters.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if is_paginated %}
+        <div class="flex items-center justify-between mt-4">
+            <p class="text-sm text-muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+            <div class="btn-group" role="group">
+                {% if page_obj.has_previous %}
+                <a class="btn btn-outline-peach" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a class="btn btn-outline-peach" href="?page={{ page_obj.next_page_number }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

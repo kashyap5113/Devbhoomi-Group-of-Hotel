@@ -1,0 +1,287 @@
+:root {
+  --bg: #0c0d10;
+  --bg-2: #121318;
+  --bg-3: #17181f;
+  --surface: #1e2027;
+  --surface-muted: #23252d;
+  --panel: #2a2c35;
+  --text-primary: #f8f7f4;
+  --text-secondary: #c8c3bc;
+  --text-muted: #9a968f;
+  --accent: #f5c38b;
+  --accent-strong: #fe9f5d;
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow: 0 25px 45px rgba(0, 0, 0, 0.45);
+  --radius: 18px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
+  --font-sans: 'Inter', 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body.admin-theme {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 0;
+}
+
+body.admin-theme a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+body.admin-theme a:hover {
+  color: var(--accent-strong);
+}
+
+body.admin-theme #header {
+  background: var(--bg-2);
+  box-shadow: var(--shadow);
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem clamp(1.5rem, 4vw, 3.5rem);
+}
+
+body.admin-theme #branding {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+body.admin-theme #branding #site-name a {
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+body.admin-theme #branding::before {
+  content: 'DG';
+  font-weight: 600;
+  background: linear-gradient(120deg, var(--accent-strong), var(--accent));
+  color: #1b110a;
+  padding: 0.65rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+
+body.admin-theme #user-tools {
+  margin-top: 0.75rem;
+  color: var(--text-muted);
+}
+
+body.admin-theme #user-tools a {
+  font-weight: 500;
+}
+
+body.admin-theme #content {
+  background: var(--bg);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+body.admin-theme #content-main,
+body.admin-theme #content-related {
+  background: transparent;
+  color: var(--text-primary);
+}
+
+body.admin-theme .dashboard-modules,
+body.admin-theme .module,
+body.admin-theme .app-list .app,
+body.admin-theme .app-index .app {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+body.admin-theme .app-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+body.admin-theme .app-list .app h2,
+body.admin-theme .app-list .app h2 a {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+body.admin-theme .app-list .app table {
+  width: 100%;
+  margin-top: 1rem;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+body.admin-theme .app-list .app table th {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+body.admin-theme .app-list .app table td {
+  padding: 0.35rem 0;
+}
+
+body.admin-theme .app-list .app table td a {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+body.admin-theme .module caption,
+body.admin-theme .module h2 {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+body.admin-theme .breadcrumbs {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+body.admin-theme .changelist-filter,
+body.admin-theme #changelist-filter,
+body.admin-theme .module.filtered {
+  background: var(--surface-muted);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+}
+
+body.admin-theme table {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+body.admin-theme table thead th {
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--border);
+}
+
+body.admin-theme table tbody tr:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+body.admin-theme table tbody td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+body.admin-theme .deletelink,
+body.admin-theme .deletelink:hover,
+body.admin-theme .button,
+body.admin-theme input[type="submit"],
+body.admin-theme button,
+body.admin-theme .submit-row input {
+  background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+  color: #1a1208;
+  border: none;
+  border-radius: 999px;
+  padding: 0.65rem 1.25rem;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.admin-theme .button.default,
+body.admin-theme .submit-row input.default {
+  background: linear-gradient(135deg, #f9d5a4, var(--accent));
+}
+
+body.admin-theme .submit-row {
+  background: transparent;
+  border-top: 1px solid var(--border);
+  padding: 1.25rem 0;
+}
+
+body.admin-theme .paginator {
+  border: none;
+  color: var(--text-muted);
+}
+
+body.admin-theme #container {
+  background: transparent;
+}
+
+body.admin-theme .selector,
+body.admin-theme .aligned .selector {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+body.admin-theme .selector select,
+body.admin-theme input,
+body.admin-theme select,
+body.admin-theme textarea {
+  background: var(--surface-muted);
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+body.admin-theme input:focus,
+body.admin-theme select:focus,
+body.admin-theme textarea:focus {
+  outline: 2px solid rgba(245, 195, 139, 0.3);
+  border-color: var(--accent);
+}
+
+body.admin-theme .module .help,
+body.admin-theme p.help,
+body.admin-theme .helptext {
+  color: var(--text-muted);
+}
+
+body.admin-theme .inline-group {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+body.admin-theme .inline-group h2 {
+  color: var(--text-secondary);
+}
+
+body.admin-theme .messagelist li {
+  background: rgba(245, 195, 139, 0.1);
+  border: 1px solid rgba(245, 195, 139, 0.4);
+  color: var(--accent);
+}
+
+body.admin-theme #nav-sidebar {
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+}
+
+body.admin-theme #nav-sidebar .module caption {
+  color: var(--text-muted);
+}
+
+@media (min-width: 1200px) {
+  body.admin-theme #content {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+  }
+
+  body.admin-theme #content-related {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+  }
+}

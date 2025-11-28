@@ -219,3 +219,24 @@ class SignupForm(forms.ModelForm):
             profile.phone = self.cleaned_data["phone"]
             profile.save()
         return user
+
+
+class OTPVerificationForm(forms.Form):
+    token = forms.CharField(
+        label="Authenticator Code",
+        max_length=6,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "6-digit code",
+                "inputmode": "numeric",
+                "autocomplete": "one-time-code",
+            }
+        ),
+    )
+
+    def clean_token(self):
+        token = self.cleaned_data["token"].strip()
+        if not token.isdigit() or len(token) != 6:
+            raise forms.ValidationError("Enter a valid 6-digit code")
+        return token

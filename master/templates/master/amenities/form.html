@@ -1,0 +1,22 @@
+{% extends "master/base.html" %}
+{% block title %}{{ page_title|default:"Amenity" }} · Dwarka Master{% endblock %}
+{% block page_heading %}{{ page_title|default:"Amenity" }}{% endblock %}
+{% block content %}
+<section class="form-card">
+    <form method="post" class="grid gap-6 md:grid-cols-2">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="flex flex-col gap-2">
+            <label class="text-xs uppercase tracking-[0.2em] text-muted">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="text-xs text-muted">{{ field.help_text }}</p>{% endif %}
+            {% for error in field.errors %}<p class="text-xs text-danger">{{ error }}</p>{% endfor %}
+        </div>
+        {% endfor %}
+        <div class="md:col-span-2 flex justify-between pt-4">
+            <a href="{% url 'master:amenities' %}" class="btn btn-outline-peach">Cancel</a>
+            <button type="submit" class="btn btn-peach">Save Amenity</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

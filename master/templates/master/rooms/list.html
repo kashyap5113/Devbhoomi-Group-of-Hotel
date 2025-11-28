@@ -1,0 +1,63 @@
+{% extends "master/base.html" %}
+{% block title %}Rooms · {{ hotel.name }}{% endblock %}
+{% block page_heading %}{{ hotel.name }} · Rooms{% endblock %}
+{% block content %}
+<section class="stat-card mb-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <p class="stat-label">Hotel</p>
+            <h2 class="chart-title">{{ hotel.name }}</h2>
+            <p class="text-sm text-muted">{{ hotel.city }} • {{ hotel.address|truncatechars:80 }}</p>
+        </div>
+        <div class="flex gap-3">
+            <div class="badge-status badge-active">{{ rooms.count }} room types</div>
+            {% if can_add_room %}
+            <a href="{% url 'master:room-create' hotel.id %}" class="btn btn-peach">Add Room Type</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="room-grid">
+    {% for room in rooms %}
+    <article class="room-card">
+        <header class="flex justify-between items-start">
+            <div>
+                <h3 class="fw-semibold">{{ room.name }}</h3>
+                <p class="room-pill"><span class="bi bi-moon"></span> {{ room.get_bed_type_display }} • Sleeps {{ room.capacity }}</p>
+            </div>
+            <span class="badge-status {% if room.is_available %}badge-active{% else %}badge-inactive{% endif %}">
+                {% if room.is_available %}Available{% else %}Unavailable{% endif %}
+            </span>
+        </header>
+        {% if room.image %}
+        <img src="{{ room.image.url }}" alt="{{ room.name }}" loading="lazy">
+        {% endif %}
+        <div class="flex justify-between items-center">
+            <p class="text-lg fw-semibold">₹{{ room.price_per_night }}<span class="text-sm text-muted"> / night</span></p>
+            <p class="text-sm text-muted">{{ room.size_sqft }} sqft</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            {% for amenity in room.amenities.all %}
+            <span class="amenity-badge">{{ amenity.icon }} {{ amenity.name }}</span>
+            {% empty %}
+            <span class="text-muted text-sm">No amenities mapped yet.</span>
+            {% endfor %}
+        </div>
+        <div class="flex justify-between items-center mt-3">
+            <p class="text-xs text-muted">Slug: {{ room.slug|default:"auto" }}</p>
+            <div class="btn-group btn-group-sm" role="group">
+                {% if perms.hotels.change_roomtype %}
+                <a href="{% url 'master:room-edit' room.pk %}" class="btn btn-outline-peach">Edit</a>
+                {% endif %}
+                {% if perms.hotels.delete_roomtype %}
+                <a href="{% url 'master:room-delete' room.pk %}" class="btn btn-outline-peach">Delete</a>
+                {% endif %}
+            </div>
+        </div>
+    </article>
+    {% empty %}
+    <p class="text-muted">No rooms yet. {% if can_add_room %}<a class="text-decoration-underline" href="{% url 'master:room-create' hotel.id %}">Create the first room.</a>{% endif %}</p>
+    {% endfor %}
+</section>
+{% endblock %}

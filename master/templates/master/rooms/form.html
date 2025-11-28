@@ -1,0 +1,41 @@
+{% extends "master/base.html" %}
+{% block title %}{% if form.instance.pk %}Edit {{ form.instance.name }}{% else %}New Room Type{% endif %} · {{ hotel.name }}{% endblock %}
+{% block page_heading %}{{ hotel.name }} · {% if form.instance.pk %}Edit Room{% else %}Create Room{% endif %}{% endblock %}
+{% block content %}
+<section class="form-card">
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div>
+            <p class="stat-label">Hotel</p>
+            <h2 class="chart-title">{{ hotel.name }}</h2>
+            <p class="text-sm text-muted">{{ hotel.city }} • {{ hotel.address|truncatechars:70 }}</p>
+        </div>
+        <a href="{% url 'master:hotel-rooms' hotel.id %}" class="btn btn-outline-peach">← Back to Rooms</a>
+    </header>
+    <form method="post" enctype="multipart/form-data" class="grid gap-6 md:grid-cols-2">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="flex flex-col gap-2 {% if field.name in ('description', 'amenities') %}md:col-span-2{% endif %}">
+            <label class="text-xs uppercase tracking-[0.2em] text-muted">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+            {% if field.name == 'amenities' %}
+            <div class="checkbox-grid">
+                {% for checkbox in field %}
+                <label class="amenity-badge">
+                    {{ checkbox.tag }}
+                    <span>{{ checkbox.choice_label }}</span>
+                </label>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ field }}
+            {% endif %}
+            {% if field.help_text %}<p class="text-xs text-muted">{{ field.help_text }}</p>{% endif %}
+            {% for error in field.errors %}<p class="text-xs text-danger">{{ error }}</p>{% endfor %}
+        </div>
+        {% endfor %}
+        <div class="md:col-span-2 flex justify-between pt-4">
+            <a href="{% url 'master:hotel-rooms' hotel.id %}" class="btn btn-outline-peach">Cancel</a>
+            <button type="submit" class="btn btn-peach">Save Room Type</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

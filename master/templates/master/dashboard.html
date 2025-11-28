@@ -1,0 +1,66 @@
+{% extends "master/base.html" %}
+{% block title %}Dashboard · Dwarka Master{% endblock %}
+{% block page_heading %}Performance Overview{% endblock %}
+{% block content %}
+<section class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <article class="stat-card">
+        <p class="stat-label">Total Hotels</p>
+        <h3 class="stat-value">{{ stats.hotels|default:0 }}</h3>
+        <p class="stat-meta text-success"><span class="bi bi-arrow-up-right"></span> +12.5% vs last month</p>
+    </article>
+    <article class="stat-card">
+        <p class="stat-label">Room Types</p>
+        <h3 class="stat-value">{{ stats.rooms|default:0 }}</h3>
+        <p class="stat-meta text-danger"><span class="bi bi-arrow-down-right"></span> -2% availability</p>
+    </article>
+    <article class="stat-card">
+        <p class="stat-label">Bookings</p>
+        <h3 class="stat-value">{{ stats.bookings|default:0 }}</h3>
+        <p class="stat-meta text-success"><span class="bi bi-arrow-up-right"></span> +18% YoY</p>
+    </article>
+    <article class="stat-card">
+        <p class="stat-label">Last 7 Days</p>
+        <h3 class="stat-value">{{ stats.recent_bookings|default:0 }}</h3>
+        <p class="stat-meta text-muted">Recent conversions</p>
+    </article>
+</section>
+
+<section class="grid gap-6 xl:grid-cols-3 mt-8">
+    <div class="chart-card xl:col-span-2">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <p class="chart-label">Total Visitors</p>
+                <h4 class="chart-title">Last 3 months</h4>
+            </div>
+            <div class="btn-group btn-group-sm" role="group">
+                <button class="btn btn-outline-peach active">Last 3 months</button>
+                <button class="btn btn-outline-peach">Last 30 days</button>
+                <button class="btn btn-outline-peach">Last 7 days</button>
+            </div>
+        </div>
+        <div class="chart-placeholder">
+            {% include "master/partials/chart_wave.svg" %}
+        </div>
+    </div>
+
+    <div class="panel-card">
+        <div class="flex items-center justify-between mb-4">
+            <h4 class="chart-label">Recent Bookings</h4>
+            <a href="{% url 'master:hotels' %}" class="text-xs text-muted">View all</a>
+        </div>
+        <ul class="timeline">
+            {% for booking in latest_bookings %}
+            <li>
+                <div>
+                    <p class="timeline-title">{{ booking.hotel.name }}</p>
+                    <p class="timeline-sub">Room: {{ booking.room_type.name }} • {{ booking.get_status_display }}</p>
+                </div>
+                <span class="timeline-meta">{{ booking.created_at|date:"M d" }}</span>
+            </li>
+            {% empty %}
+            <li class="text-muted">No bookings yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endblock %}

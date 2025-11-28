@@ -1,0 +1,46 @@
+{% extends "master/base.html" %}
+{% block title %}Amenities · Dwarka Master{% endblock %}
+{% block page_heading %}Amenities{% endblock %}
+{% block content %}
+<section class="flex flex-col gap-6">
+    <div class="stat-card">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="stat-label">Total Amenities</p>
+                <h3 class="stat-value">{{ amenities|length }}</h3>
+                <p class="stat-meta text-muted">Room, Food & Facility icons</p>
+            </div>
+            {% if perms.hotels.add_amenity %}
+            <a href="{% url 'master:amenity-create' %}" class="btn btn-peach">New Amenity</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="chart-title">All amenities</h2>
+            <div class="badge-status badge-active">{{ amenities.count }} items</div>
+        </div>
+        <div class="amenity-crud-grid">
+            {% for amenity in amenities %}
+            <article class="amenity-item">
+                <div>
+                    <p class="fw-semibold flex items-center gap-2">{{ amenity.icon }} {{ amenity.name }}</p>
+                    <p class="text-xs text-muted uppercase tracking-[0.2em]">{{ amenity.get_category_display }}</p>
+                </div>
+                <div class="btn-group btn-group-sm" role="group">
+                    {% if perms.hotels.change_amenity %}
+                    <a href="{% url 'master:amenity-edit' amenity.pk %}" class="btn btn-outline-peach">Edit</a>
+                    {% endif %}
+                    {% if perms.hotels.delete_amenity %}
+                    <a href="{% url 'master:amenity-delete' amenity.pk %}" class="btn btn-outline-peach">Delete</a>
+                    {% endif %}
+                </div>
+            </article>
+            {% empty %}
+            <p class="text-muted">No amenities added yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -76,6 +76,18 @@ class UserProfile(models.Model):
         default=True,
         help_text="Receive booking updates via SMS"
     )
+
+    # Two-Factor Authentication (TOTP)
+    otp_secret = models.CharField(
+        max_length=32,
+        blank=True,
+        help_text="Base32 secret for authenticator apps",
+    )
+    otp_enabled = models.BooleanField(
+        default=False,
+        help_text="Require OTP verification for master module",
+    )
+    otp_last_verified = models.DateTimeField(null=True, blank=True)
     
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,55 @@
+{% extends "master/base.html" %}
+{% block title %}Rooms Overview · Dwarka Master{% endblock %}
+{% block page_heading %}Rooms Overview{% endblock %}
+{% block content %}
+<section class="grid gap-6 md:grid-cols-3">
+    <article class="stat-card">
+        <p class="stat-label">Total Hotels</p>
+        <h3 class="stat-value">{{ hotel_total }}</h3>
+        <p class="stat-meta text-muted">Active properties</p>
+    </article>
+    <article class="stat-card">
+        <p class="stat-label">Room Types</p>
+        <h3 class="stat-value">{{ room_total }}</h3>
+        <p class="stat-meta text-success">Inventory synced</p>
+    </article>
+    <article class="stat-card">
+        <p class="stat-label">Create Room</p>
+        <a class="btn btn-peach mt-4" href="{% if hotels %}{% url 'master:hotel-rooms' hotels.0.id %}{% else %}#{% endif %}">Go to first hotel</a>
+    </article>
+</section>
+
+<section class="table-card mt-8">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="chart-title">Hotels & Rooms</h2>
+        <p class="text-sm text-muted">Tap a hotel to view room cards</p>
+    </div>
+    <div class="room-grid">
+        {% for hotel in hotels %}
+        <article class="room-card">
+            <header class="flex items-center gap-3">
+                {% if hotel.main_image %}
+                <img src="{{ hotel.main_image.url }}" alt="{{ hotel.name }}" style="width:60px;height:60px;object-fit:cover;border-radius:16px;">
+                {% else %}
+                <div class="bg-night-3" style="width:60px;height:60px;border-radius:16px;display:grid;place-items:center;">🏨</div>
+                {% endif %}
+                <div>
+                    <p class="fw-semibold">{{ hotel.name }}</p>
+                    <p class="text-sm text-muted">{{ hotel.city }}</p>
+                </div>
+            </header>
+            <div class="flex items-center gap-3 text-sm text-muted">
+                <span class="badge-status badge-active">{{ hotel.room_types.count }} rooms</span>
+                <span>{{ hotel.base_price|floatformat:0 }} avg base</span>
+            </div>
+            <div class="flex justify-between items-center mt-3">
+                <span class="text-xs uppercase tracking-[0.2em] text-muted">Updated {{ hotel.updated_at|date:"M d" }}</span>
+                <a href="{% url 'master:hotel-rooms' hotel.id %}" class="btn btn-outline-peach btn-sm">View Rooms</a>
+            </div>
+        </article>
+        {% empty %}
+        <p class="text-muted">No hotels configured yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

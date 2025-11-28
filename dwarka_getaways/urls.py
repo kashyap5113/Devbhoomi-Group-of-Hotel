@@ -15,6 +15,8 @@ urlpatterns = [
     
     # Core app - Homepage, About, Contact
     path('', include('core.urls')),
+     # Master app - Master data management
+    path('master/', include('master.urls')),
     
     # Hotels app - Search, Hotel Details
     path('hotels/', include('hotels.urls')),

@@ -10,15 +10,25 @@ from django.utils.text import slugify
 
 
 class Amenity(models.Model):
-    """
-    Hotel amenities like Wi-Fi, Pool, Parking, etc.
-    """
+    """Hotel amenities like Wi-Fi, Pool, Parking, etc."""
+
+    CATEGORY_CHOICES = [
+        ("room", "Room"),
+        ("food", "Food & Dining"),
+        ("facility", "Facility"),
+    ]
+
     name = models.CharField(max_length=100)
     icon = models.CharField(
-        max_length=50, 
-        help_text="FontAwesome icon class (e.g., fa-wifi)"
+        max_length=50,
+        help_text="Icon class (Bootstrap Icons, e.g., bi-wifi)",
     )
-    
+    category = models.CharField(
+        max_length=20,
+        choices=CATEGORY_CHOICES,
+        default="room",
+    )
+
     def __str__(self):
         return self.name
     
@@ -28,10 +38,8 @@ class Amenity(models.Model):
 
 
 class Hotel(models.Model):
-    """
-    Main Hotel model with all details
-    """
-    
+    """Main Hotel model with all details used across public + master modules."""
+
     PROPERTY_TYPES = [
         ('hotel', 'Hotel'),
         ('resort', 'Resort'),
@@ -42,6 +50,7 @@ class Hotel(models.Model):
     # Basic Information
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
+    city = models.CharField(max_length=120, default="Dwarka")
     property_type = models.CharField(
         max_length=20, 
         choices=PROPERTY_TYPES, 
@@ -56,6 +65,20 @@ class Hotel(models.Model):
         help_text="e.g., 200m from Dwarkadhish Temple"
     )
     landmark = models.CharField(max_length=200, blank=True)
+    latitude = models.DecimalField(
+        max_digits=9,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        help_text="Optional latitude for map integrations",
+    )
+    longitude = models.DecimalField(
+        max_digits=9,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        help_text="Optional longitude for map integrations",
+    )
     
     # Pricing
     base_price = models.DecimalField(
@@ -158,27 +181,44 @@ class HotelImage(models.Model):
 
 
 class RoomType(models.Model):
-    """
-    Different room types available in a hotel
-    """
+    """Different room types available in a hotel"""
+
+    BED_CHOICES = [
+        ("single", "Single"),
+        ("double", "Double"),
+        ("twin", "Twin"),
+        ("suite", "Suite"),
+    ]
+
     hotel = models.ForeignKey(
-        Hotel, 
-        related_name='room_types', 
+        Hotel,
+        related_name='room_types',
         on_delete=models.CASCADE
     )
     name = models.CharField(
-        max_length=100, 
+        max_length=100,
         help_text="e.g., Deluxe Room, Suite, Standard Room"
     )
+    slug = models.SlugField(max_length=140, blank=True)
     description = models.TextField(blank=True)
+    bed_type = models.CharField(max_length=20, choices=BED_CHOICES, default="double")
+    capacity = models.PositiveIntegerField(default=2, help_text="Total guests allowed")
     max_guests = models.IntegerField(default=2)
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
+    size_sqft = models.PositiveIntegerField(default=250)
     total_rooms = models.IntegerField(default=1, help_text="Total rooms available")
+    amenities = models.ManyToManyField(Amenity, blank=True)
+    image = models.ImageField(upload_to='hotels/rooms/', blank=True, null=True)
     is_available = models.BooleanField(default=True)
-    
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"{self.hotel.slug}-{self.name}")
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.hotel.name} - {self.name}"
-    
+
     class Meta:
         ordering = ['price_per_night']
 
