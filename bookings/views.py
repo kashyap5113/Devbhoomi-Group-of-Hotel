@@ -5,57 +5,101 @@ Bookings app views
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
+from django.urls import reverse
 from datetime import datetime
 from .models import Booking, GuestDetail, Payment, Coupon
 from hotels.models import Hotel, RoomType
 
-def booking_page(request, hotel_slug):
+def booking_page(request, hotel_slug, room_type_id=None):
     """Booking page for a specific hotel"""
     hotel = get_object_or_404(Hotel, slug=hotel_slug, is_active=True)
-    
+
+    # Determine selected room type
+    room_queryset = hotel.room_types.filter(is_available=True)
+    room_type = None
+    if room_type_id:
+        room_type = get_object_or_404(room_queryset, id=room_type_id)
+    else:
+        room_type_param = request.GET.get('room')
+        if room_type_param:
+            room_type = room_queryset.filter(id=room_type_param).first()
+    room_type = room_type or room_queryset.first()
+
     # Get search parameters from session or query params
     checkin = request.GET.get('checkin', '')
     checkout = request.GET.get('checkout', '')
-    adults = request.GET.get('adults', 2)
-    children = request.GET.get('children', 0)
-    rooms = request.GET.get('rooms', 1)
-    
+    adults = int(request.GET.get('adults', 2))
+    children = int(request.GET.get('children', 0))
+    rooms = int(request.GET.get('rooms', 1))
+
     # Calculate nights
     nights = 0
+    checkin_date = checkout_date = None
     if checkin and checkout:
         try:
             checkin_date = datetime.strptime(checkin, '%Y-%m-%d').date()
             checkout_date = datetime.strptime(checkout, '%Y-%m-%d').date()
-            nights = (checkout_date - checkin_date).days
+            nights = max((checkout_date - checkin_date).days, 1)
         except ValueError:
-            pass
-    
-    # Get available room types
-    room_types = hotel.room_types.filter(is_available=True)
-    
+            checkin_date = checkout_date = None
+
     # Calculate pricing
-    base_price = float(hotel.base_price) * nights if nights else float(hotel.base_price)
+    nightly_rate = float(room_type.price_per_night) if room_type else float(hotel.base_price)
+    stay_nights = nights or 1
+    base_price = nightly_rate * stay_nights * rooms
     discount = (base_price * hotel.discount_percentage) / 100 if hotel.discount_percentage else 0
-    taxes = (base_price - discount) * 0.12  # 12% GST
-    total = base_price - discount + taxes
-    
+    coupon_discount = 0  # Placeholder to be updated when coupon applied
+    subtotal = base_price - discount - coupon_discount
+    taxes = subtotal * 0.12  # 12% GST
+    total = subtotal + taxes
+
+    amenities = hotel.amenities.all()
+    food_info = getattr(hotel, 'food_info', None)
+    rules_info = getattr(hotel, 'rules', None)
+    default_food = [
+        "Complimentary breakfast buffet",
+        "Pure vegetarian kitchen",
+        "24/7 room service",
+    ]
+    default_rules = [
+        "Check-in after 12:00 PM",
+        "Valid ID proof required for all guests",
+        "No smoking inside rooms",
+    ]
+
     context = {
         'hotel': hotel,
-        'room_types': room_types,
+        'selected_room': room_type,
+        'room_types': room_queryset,
         'checkin': checkin,
         'checkout': checkout,
+        'checkin_date': checkin_date,
+        'checkout_date': checkout_date,
         'adults': adults,
         'children': children,
         'rooms': rooms,
-        'nights': nights,
+        'nights': stay_nights,
         'pricing': {
+            'nightly_rate': nightly_rate,
             'base_price': base_price,
             'discount': discount,
+            'coupon_discount': coupon_discount,
             'taxes': taxes,
             'total': total,
-        }
+        },
+        'booking_summary': {
+            'nights': stay_nights,
+            'rooms': rooms,
+            'guests_label': f"{adults} Adults" + (f" & {children} Children" if children else ''),
+        },
+        'amenities': amenities,
+        'food_info': food_info or default_food,
+        'rules_info': rules_info or default_rules,
+        'booking_form_action': reverse('bookings:process'),
+        'login_url': reverse('users:login'),
+        'signup_url': reverse('users:signup'),
     }
-    
+
     return render(request, 'bookings/booking_page.html', context)
 
 

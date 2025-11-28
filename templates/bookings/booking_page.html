@@ -9,6 +9,75 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <style>
+        .login-option-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--palm-cream);
+            border-radius: 18px;
+            padding: 18px 22px;
+            color: var(--peacock-green);
+            text-decoration: none;
+            height: 100%;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+        }
+        .login-option-card:hover {
+            text-decoration: none;
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+        }
+        .login-option-card .login-icon-wrap {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--peacock-green);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .login-option-card h5 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+        }
+        .login-option-card p {
+            margin: 0;
+            color: #5f6b6d;
+        }
+        .feature-card {
+            background: var(--palm-cream);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.07);
+            height: 100%;
+        }
+        .feature-card h4 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .feature-card ul li {
+            padding: 0.2rem 0;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            color: #485152;
+        }
+        .booking-card .form-control:focus,
+        .booking-card .form-select:focus {
+            box-shadow: 0 0 0 0.2rem rgba(4, 101, 78, 0.15);
+            border-color: var(--peacock-green);
+        }
+        .booking-card .form-control.is-invalid,
+        .booking-card .form-select.is-invalid {
+            border-color: #dc3545;
+        }
+        .booking-card .form-control.is-valid,
+        .booking-card .form-select.is-valid {
+            border-color: #198754;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -87,193 +156,236 @@
     </section>
 
     <!-- Booking Section -->
-    <section class="booking-section">
+    <section class="booking-section py-5">
         <div class="container">
-            <div class="row">
+            <div class="row g-4">
                 <!-- Main Content -->
                 <div class="col-lg-8">
-                    
-                    <!-- Step 1: Login/Guest -->
-                    <div class="booking-step active" id="content-step1">
-                        <div class="booking-card">
-                            <h2 class="section-title">
-                                <i class="fas fa-user-circle"></i>
-                                Login or Continue as Guest
-                            </h2>
-                            
-                            <div class="login-options">
-                                <div class="login-option" onclick="selectLoginOption(this, 'guest')">
-                                    <i class="fas fa-user"></i>
-                                    <h5>Continue as Guest</h5>
-                                    <p>Quick booking without account</p>
-                                </div>
-                                <div class="login-option" onclick="selectLoginOption(this, 'login')">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                    <h5>Login</h5>
-                                    <p>Access your saved details</p>
-                                </div>
-                                <div class="login-option" onclick="selectLoginOption(this, 'signup')">
-                                    <i class="fas fa-user-plus"></i>
-                                    <h5>Create Account</h5>
-                                    <p>Get exclusive offers</p>
-                                </div>
+                    {% if not user.is_authenticated %}
+                    <!-- Step 1: Auth choices -->
+                    <div class="booking-card mb-4">
+                        <h2 class="section-title">
+                            <i class="fas fa-user-circle"></i>
+                            Continue your booking
+                        </h2>
+                        <p class="text-muted mb-4">Please login or create an account to move ahead with your reservation.</p>
+                        <div class="row justify-content-center g-4 flex-md-nowrap">
+                            <div class="col-md-5">
+                                <a class="login-option-card" href="{{ login_url }}">
+                                    <div class="login-icon-wrap"><i class="fas fa-sign-in-alt"></i></div>
+                                    <div>
+                                        <h5>Login</h5>
+                                        <p>Access saved guests & bookings</p>
+                                    </div>
+                                </a>
                             </div>
-
-                            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                                <button class="btn-continue" style="width: auto; padding: 15px 40px;" onclick="alert('Downloading voucher...')">
-                                    <i class="fas fa-download me-2"></i>Download Voucher
-                                </button>
-                                <button class="btn-back" style="width: auto; padding: 15px 40px; margin-top: 0;" onclick="alert('Sending to email...')">
-                                    <i class="fas fa-envelope me-2"></i>Email Voucher
-                                </button>
-                            </div>
-
-                            <div style="margin-top: 40px;">
-                                <a href="{% url 'core:index' %}" onclick="resetBooking()" style="color: var(--peacock-green); text-decoration: none; font-weight: 600; font-size: 1.1rem;">
-                                    <i class="fas fa-home me-2"></i>Back to Homepage
+                            <div class="col-md-5">
+                                <a class="login-option-card" href="{{ signup_url }}">
+                                    <div class="login-icon-wrap"><i class="fas fa-user-plus"></i></div>
+                                    <div>
+                                        <h5>Create Account</h5>
+                                        <p>Unlock offers & faster checkout</p>
+                                    </div>
                                 </a>
                             </div>
                         </div>
+                    </div>
+                    {% endif %}
 
-                        <div class="trust-badges">
-                            <div class="trust-badge">
-                                <i class="fas fa-headset"></i>
-                                <p>24/7 Support</p>
+                    <!-- Informational cards -->
+                    <div class="booking-card mb-4">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="feature-card h-100">
+                                    <h4><i class="fas fa-spa me-2 text-success"></i>Hotel Amenities</h4>
+                                    <ul class="list-unstyled mb-0">
+                                        {% for amenity in amenities %}
+                                        <li><i class="fas fa-check me-2 text-success"></i>{{ amenity.name }}</li>
+                                        {% empty %}
+                                        <li class="text-muted">Amenities coming soon.</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="trust-badge">
-                                <i class="fas fa-shield-alt"></i>
-                                <p>Secure Payment</p>
+                            <div class="col-md-4">
+                                <div class="feature-card h-100">
+                                    <h4><i class="fas fa-utensils me-2 text-success"></i>Food & Dining</h4>
+                                    <ul class="list-unstyled mb-0">
+                                        {% for item in food_info %}
+                                        <li><i class="fas fa-leaf me-2 text-success"></i>{{ item }}</li>
+                                        {% empty %}
+                                        <li class="text-muted">Dining details will be added soon.</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="trust-badge">
-                                <i class="fas fa-undo"></i>
-                                <p>Easy Cancellation</p>
-                            </div>
-                            <div class="trust-badge">
-                                <i class="fas fa-check-circle"></i>
-                                <p>Instant Confirmation</p>
+                            <div class="col-md-4">
+                                <div class="feature-card h-100">
+                                    <h4><i class="fas fa-scroll me-2 text-success"></i>Hotel Rules</h4>
+                                    <ul class="list-unstyled mb-0">
+                                        {% for rule in rules_info %}
+                                        <li><i class="fas fa-info-circle me-2 text-warning"></i>{{ rule }}</li>
+                                        {% empty %}
+                                        <li class="text-muted">Rules & policies forthcoming.</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Guest form -->
+                    <div class="booking-card" id="content-step2">
+                        <h2 class="section-title">
+                            <i class="fas fa-id-card"></i>
+                            Guest Details
+                        </h2>
+                        <form id="guestDetailsForm" class="needs-validation" method="post" action="{{ booking_form_action }}" novalidate>
+                            {% csrf_token %}
+                            <input type="hidden" name="hotel_id" value="{{ hotel.id }}">
+                            {% if selected_room %}<input type="hidden" name="room_type_id" value="{{ selected_room.id }}">{% endif %}
+                            <input type="hidden" name="checkin" value="{{ checkin }}">
+                            <input type="hidden" name="checkout" value="{{ checkout }}">
+                            <input type="hidden" name="adults" value="{{ adults }}">
+                            <input type="hidden" name="children" value="{{ children }}">
+                            <input type="hidden" name="rooms" value="{{ rooms }}">
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label" for="guestTitle">Title</label>
+                                    <select class="form-select" id="guestTitle" name="title" required>
+                                        <option value="" selected disabled>Select title</option>
+                                        <option value="Mr">Mr.</option>
+                                        <option value="Mrs">Mrs.</option>
+                                        <option value="Ms">Ms.</option>
+                                        <option value="Dr">Dr.</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a title.</div>
+                                </div>
+                                <div class="col-md-8 mb-3">
+                                    <label class="form-label" for="guestFullName">Full Name</label>
+                                    <input type="text" class="form-control" id="guestFullName" name="full_name" placeholder="Enter full name" pattern="^[A-Za-z\s]{3,60}$" minlength="3" maxlength="60" required>
+                                    <div class="invalid-feedback">Enter your full name using letters only (minimum 3 characters).</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="guestEmail">Email Address</label>
+                                    <input type="email" class="form-control" id="guestEmail" name="email" placeholder="yourname@gmail.com" autocomplete="email" pattern="^[A-Za-z0-9._%+-]+@gmail\.com$" required>
+                                    <div class="invalid-feedback">Please provide a valid Gmail address (example: user@gmail.com).</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="guestPhone">Mobile Number</label>
+                                    <input type="tel" class="form-control" id="guestPhone" name="phone" placeholder="10-digit mobile number" pattern="^[6-9]\d{9}$" inputmode="numeric" minlength="10" maxlength="10" required>
+                                    <div class="invalid-feedback">Enter a valid 10-digit Indian mobile number.</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="guestIdType">ID Proof Type</label>
+                                    <select class="form-select" id="guestIdType" name="id_type" required>
+                                        <option value="" selected disabled>Select ID type</option>
+                                        <option value="Aadhaar">Aadhaar Card</option>
+                                        <option value="PAN">PAN Card</option>
+                                        <option value="DL">Driving License</option>
+                                        <option value="Passport">Passport</option>
+                                    </select>
+                                    <div class="invalid-feedback">Select the ID proof you will present at check-in.</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="guestIdNumber">ID Number</label>
+                                    <input type="text" class="form-control" id="guestIdNumber" name="id_number" placeholder="Enter ID number" pattern="^[A-Za-z0-9]{6,20}$" minlength="6" maxlength="20" required>
+                                    <div class="invalid-feedback">Enter a valid ID number (6-20 alphanumeric characters).</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label" for="guestRequests">Special Requests (Optional)</label>
+                                <textarea class="form-control" id="guestRequests" rows="3" name="special_requests" placeholder="Any special requirements?" maxlength="250"></textarea>
+                                <div class="form-text text-muted">Maximum 250 characters.</div>
+                            </div>
+
+                            <div class="sticky-footer">
+                                <button type="submit" class="btn-continue w-100">
+                                    Continue
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
-                <!-- Sidebar - Booking Summary -->
+                <!-- Sidebar -->
                 <div class="col-lg-4">
-                    <div class="booking-card" style="position: sticky; top: 100px;">
-                        <h3 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 25px;">
-                            <i class="fas fa-file-invoice me-2" style="color: var(--gold);"></i>
-                            Booking Summary
-                        </h3>
-
-                        <!-- Hotel Summary -->
+                    <div class="booking-card position-sticky" style="top: 100px;">
+                        <h3 class="text-uppercase text-muted mb-3">Booking Summary</h3>
                         <div class="hotel-summary">
                             <div class="hotel-summary-content">
-                                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=120&h=120&fit=crop" alt="Hotel" class="hotel-summary-image">
+                                {% if hotel.main_image %}
+                                <img src="{{ hotel.main_image.url }}" alt="{{ hotel.name }}" class="hotel-summary-image">
+                                {% else %}
+                                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=300&h=300&fit=crop" alt="{{ hotel.name }}" class="hotel-summary-image">
+                                {% endif %}
                                 <div class="hotel-summary-info">
-                                    <h4>Krishna Heritage Hotel</h4>
-                                    <p><i class="fas fa-star"></i> 4.8 Rating</p>
-                                    <p><i class="fas fa-map-marker-alt"></i> Near Dwarkadhish Temple</p>
+                                    <h4>{{ hotel.name }}</h4>
+                                    <p><i class="fas fa-star"></i> {{ hotel.rating|default:"-" }} Rating</p>
+                                    <p><i class="fas fa-map-marker-alt"></i> {{ hotel.distance_from_temple }}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Booking Details -->
-                        <div style="margin-bottom: 25px;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e0e0e0;">
-                                <div>
-                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Check-in</p>
-                                    <p style="color: var(--peacock-green); font-weight: 600; margin: 5px 0;">25 Dec 2024</p>
-                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">12:00 PM</p>
-                                </div>
-                                <div style="text-align: right;">
-                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Check-out</p>
-                                    <p style="color: var(--peacock-green); font-weight: 600; margin: 5px 0;">27 Dec 2024</p>
-                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">11:00 AM</p>
-                                </div>
+                        <div class="divider my-3"></div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <p class="text-muted small mb-1">Check-in</p>
+                                <p class="fw-semibold">{{ checkin_date|date:'d M Y'|default:'TBD' }}</p>
                             </div>
-
-                            <div style="padding: 15px; background: var(--palm-cream); border-radius: 10px; margin-bottom: 15px;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                    <span style="color: #666;"><i class="fas fa-moon me-2"></i>Nights</span>
-                                    <strong>2</strong>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                    <span style="color: #666;"><i class="fas fa-door-open me-2"></i>Rooms</span>
-                                    <strong>1</strong>
-                                </div>
-                                <div style="display: flex; justify-content: space-between;">
-                                    <span style="color: #666;"><i class="fas fa-users me-2"></i>Guests</span>
-                                    <strong>2 Adults</strong>
-                                </div>
+                            <div class="text-end">
+                                <p class="text-muted small mb-1">Check-out</p>
+                                <p class="fw-semibold">{{ checkout_date|date:'d M Y'|default:'TBD' }}</p>
                             </div>
                         </div>
-
-                        <!-- Price Breakdown -->
-                        <div class="price-breakdown">
-                            <h5 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 15px;">Price Details</h5>
-                            
-                            <div class="price-row">
-                                <span class="price-label">Room Price (2 nights)</span>
-                                <span class="price-value">₹6,998</span>
-                            </div>
-                            
-                            <div class="price-row">
-                                <span class="price-label">Taxes & Fees</span>
-                                <span class="price-value">₹840</span>
-                            </div>
-                            
-                            <div class="price-row">
-                                <span class="price-label">Discount (30% OFF)</span>
-                                <span class="price-value" style="color: #4CAF50;">- ₹3,000</span>
-                            </div>
-                            
-                            <div class="price-row">
-                                <span class="price-label">Coupon Discount</span>
-                                <span class="price-value" style="color: #4CAF50;">- ₹500</span>
-                            </div>
-
-                            <div class="total-price">
-                                <span class="label">Total Amount</span>
-                                <span class="amount">₹4,338</span>
-                            </div>
+                        <div class="summary-pill mb-3">
+                            <div><i class="fas fa-moon me-2"></i>Nights <strong>{{ booking_summary.nights }}</strong></div>
+                            <div><i class="fas fa-door-open me-2"></i>Rooms <strong>{{ booking_summary.rooms }}</strong></div>
+                            <div><i class="fas fa-users me-2"></i>{{ booking_summary.guests_label }}</div>
                         </div>
 
-                        <!-- Inclusions -->
-                        <div style="background: var(--palm-cream); border-radius: 12px; padding: 20px;">
-                            <h5 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 15px;">
-                                <i class="fas fa-check-circle me-2" style="color: var(--gold);"></i>What's Included
-                            </h5>
-                            <div style="display: grid; gap: 10px;">
-                                <div style="display: flex; align-items: center;">
-                                    <i class="fas fa-check" style="color: var(--gold); margin-right: 10px;"></i>
-                                    <span style="color: #666;">Complimentary Breakfast</span>
-                                </div>
-                                <div style="display: flex; align-items: center;">
-                                    <i class="fas fa-check" style="color: var(--gold); margin-right: 10px;"></i>
-                                    <span style="color: #666;">Free Wi-Fi</span>
-                                </div>
-                                <div style="display: flex; align-items: center;">
-                                    <i class="fas fa-check" style="color: var(--gold); margin-right: 10px;"></i>
-                                    <span style="color: #666;">Free Parking</span>
-                                </div>
-                                <div style="display: flex; align-items: center;">
-                                    <i class="fas fa-check" style="color: var(--gold); margin-right: 10px;"></i>
-                                    <span style="color: #666;">Temple View Room</span>
-                                </div>
-                                <div style="display: flex; align-items: center;">
-                                    <i class="fas fa-check" style="color: var(--gold); margin-right: 10px;"></i>
-                                    <span style="color: #666;">Free Cancellation</span>
-                                </div>
-                            </div>
+                        <h5 class="fw-bold mb-3">Price Details</h5>
+                        <div class="price-row">
+                            <span class="price-label">Room price ({{ booking_summary.nights }} night{% if booking_summary.nights > 1 %}s{% endif %})</span>
+                            <span class="price-value">₹{{ pricing.base_price|floatformat:0 }}</span>
+                        </div>
+                        {% if pricing.discount %}
+                        <div class="price-row">
+                            <span class="price-label">Discount</span>
+                            <span class="price-value text-success">- ₹{{ pricing.discount|floatformat:0 }}</span>
+                        </div>
+                        {% endif %}
+                        {% if pricing.coupon_discount %}
+                        <div class="price-row">
+                            <span class="price-label">Coupon Discount</span>
+                            <span class="price-value text-success">- ₹{{ pricing.coupon_discount|floatformat:0 }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="price-row">
+                            <span class="price-label">Taxes & Fees</span>
+                            <span class="price-value">₹{{ pricing.taxes|floatformat:0 }}</span>
+                        </div>
+                        <div class="total-price">
+                            <span class="label">Total Amount</span>
+                            <span class="amount">₹{{ pricing.total|floatformat:0 }}</span>
                         </div>
 
-                        <!-- Help -->
-                        <div style="margin-top: 25px; text-align: center; padding: 20px; background: white; border: 2px dashed var(--peacock-green); border-radius: 12px;">
-                            <i class="fas fa-phone-alt" style="font-size: 2rem; color: var(--peacock-green); margin-bottom: 10px;"></i>
-                            <p style="color: #666; margin-bottom: 8px; font-weight: 500;">Need Help?</p>
-                            <p style="color: var(--peacock-green); font-weight: 700; font-size: 1.2rem; margin: 0;">
-                                +91 1800 123 4567
-                            </p>
-                            <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">24/7 Customer Support</p>
+                        <div class="inclusions mt-4">
+                            <h6 class="text-muted text-uppercase">What's included</h6>
+                            <ul class="list-unstyled mb-0">
+                                {% if hotel.has_breakfast %}<li><i class="fas fa-check text-success me-2"></i>Complimentary Breakfast</li>{% endif %}
+                                {% if hotel.has_wifi %}<li><i class="fas fa-check text-success me-2"></i>Free Wi-Fi</li>{% endif %}
+                                {% if hotel.has_parking %}<li><i class="fas fa-check text-success me-2"></i>Parking Included</li>{% endif %}
+                                {% if hotel.has_temple_view %}<li><i class="fas fa-check text-success me-2"></i>Temple View Rooms</li>{% endif %}
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -281,294 +393,33 @@
         </div>
     </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% include 'site_footer.html' %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script>
-        // Step Navigation
-        function nextStep(step) {
-            // Hide all steps
-            document.querySelectorAll('.booking-step').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.progress-step').forEach(el => {
-                el.classList.remove('active');
-                el.classList.remove('completed');
+        document.addEventListener('DOMContentLoaded', function() {
+            const guestForm = document.getElementById('guestDetailsForm');
+            if (!guestForm) return;
+
+            const phoneField = guestForm.querySelector('#guestPhone');
+            if (phoneField) {
+                phoneField.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+                });
+            }
+
+            guestForm.addEventListener('submit', function(event) {
+                if (!guestForm.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                guestForm.querySelectorAll('.form-control, .form-select').forEach(function(field) {
+                    field.classList.toggle('is-invalid', !field.checkValidity());
+                    field.classList.toggle('is-valid', field.checkValidity());
+                });
             });
-            
-            // Show current step
-            document.getElementById('content-step' + step).classList.add('active');
-            document.getElementById('step' + step).classList.add('active');
-            
-            // Mark previous steps as completed
-            for (let i = 1; i < step; i++) {
-                document.getElementById('step' + i).classList.add('completed');
-            }
-            
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Login Option Selection
-        function selectLoginOption(element, type) {
-            // Remove active class from all options
-            document.querySelectorAll('.login-option').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
-            
-            // Hide all forms
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('guestForm').style.display = 'none';
-            
-            // Show selected form
-            if (type === 'login' || type === 'signup') {
-                document.getElementById('loginForm').style.display = 'block';
-            } else if (type === 'guest') {
-                document.getElementById('guestForm').style.display = 'block';
-            }
-        }
-
-        // Payment Option Selection
-        function selectPayment(element) {
-            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-        }
-
-        // Reset Booking
-        function resetBooking() {
-            nextStep(1);
-            document.querySelectorAll('.login-option').forEach(el => el.classList.remove('active'));
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('guestForm').style.display = 'none';
-        }
-
-        // Initialize first login option
-        window.onload = function() {
-            const firstOption = document.querySelector('.login-option');
-            if (firstOption) {
-                selectLoginOption(firstOption, 'guest');
-            }
-        };
+        });
     </script>
 </body>
-</html><div id="loginForm" style="display: none;">
-                                <h4 style="color: var(--peacock-green); margin-bottom: 20px;">Login to Your Account</h4>
-                                <form>
-                                    <div class="mb-3">
-                                        <label class="form-label">Email or Phone</label>
-                                        <input type="text" class="form-control" placeholder="Enter email or phone number">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Password</label>
-                                        <input type="password" class="form-control" placeholder="Enter password">
-                                    </div>
-                                    <button type="button" class="btn-continue" onclick="nextStep(2)">Login & Continue</button>
-                                </form>
-                            </div>
-
-                            <div id="guestForm" style="display: none;">
-                                <h4 style="color: var(--peacock-green); margin-bottom: 20px;">Continue as Guest</h4>
-                                <p style="color: #666; margin-bottom: 20px;">We'll need your email to send booking confirmation</p>
-                                <form>
-                                    <div class="mb-3">
-                                        <label class="form-label">Email Address</label>
-                                        <input type="email" class="form-control" placeholder="your.email@example.com" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Mobile Number</label>
-                                        <input type="tel" class="form-control" placeholder="+91 98765 43210" required>
-                                    </div>
-                                    <button type="button" class="btn-continue" onclick="nextStep(2)">Continue as Guest</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Guest Details -->
-                    <div class="booking-step" id="content-step2">
-                        <div class="booking-card">
-                            <h2 class="section-title">
-                                <i class="fas fa-id-card"></i>
-                                Guest Details
-                            </h2>
-                            
-                            <form>
-                                <h4 style="color: var(--peacock-green); margin-bottom: 20px;">Primary Guest Information</h4>
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label">Title</label>
-                                        <select class="form-select">
-                                            <option>Mr.</option>
-                                            <option>Mrs.</option>
-                                            <option>Ms.</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-8 mb-3">
-                                        <label class="form-label">Full Name</label>
-                                        <input type="text" class="form-control" placeholder="Enter full name as per ID">
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Email Address</label>
-                                        <input type="email" class="form-control" placeholder="email@example.com">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Mobile Number</label>
-                                        <input type="tel" class="form-control" placeholder="+91 98765 43210">
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">ID Proof Type</label>
-                                    <select class="form-select">
-                                        <option>Aadhaar Card</option>
-                                        <option>PAN Card</option>
-                                        <option>Driving License</option>
-                                        <option>Passport</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">ID Number</label>
-                                    <input type="text" class="form-control" placeholder="Enter ID number">
-                                </div>
-
-                                <div class="mb-4">
-                                    <label class="form-label">Special Requests (Optional)</label>
-                                    <textarea class="form-control" rows="3" placeholder="Any special requirements? (e.g., early check-in, airport pickup, dietary preferences)"></textarea>
-                                </div>
-
-                                <button type="button" class="btn-continue" onclick="nextStep(3)">Continue to Payment</button>
-                                <button type="button" class="btn-back" onclick="nextStep(1)">Back</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Review & Payment -->
-                    <div class="booking-step" id="content-step3">
-                        <!-- Available Offers -->
-                        <div class="booking-card">
-                            <h2 class="section-title">
-                                <i class="fas fa-tag"></i>
-                                Available Offers
-                            </h2>
-                            
-                            <div class="offer-card">
-                                <div class="offer-icon">🎉</div>
-                                <div class="offer-content">
-                                    <h5>First Time User Offer</h5>
-                                    <p>Get ₹500 off on your first booking. Use code: FIRST500</p>
-                                </div>
-                            </div>
-
-                            <div class="offer-card" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);">
-                                <div class="offer-icon">💰</div>
-                                <div class="offer-content">
-                                    <h5>Temple Visit Special</h5>
-                                    <p>Extra 20% off for pilgrims. Use code: TEMPLE20</p>
-                                </div>
-                            </div>
-
-                            <div class="offer-card" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);">
-                                <div class="offer-icon">🏨</div>
-                                <div class="offer-content">
-                                    <h5>Weekend Getaway</h5>
-                                    <p>Book 2 nights, get 10% discount. Use code: WEEKEND10</p>
-                                </div>
-                            </div>
-
-                            <div class="coupon-input">
-                                <input type="text" class="form-control" placeholder="Enter coupon code">
-                                <button class="btn-apply">Apply</button>
-                            </div>
-                        </div>
-
-                        <!-- Payment Options -->
-                        <div class="booking-card">
-                            <h2 class="section-title">
-                                <i class="fas fa-credit-card"></i>
-                                Payment Method
-                            </h2>
-                            
-                            <div class="payment-option selected" onclick="selectPayment(this)">
-                                <div class="payment-icon">
-                                    <i class="fas fa-credit-card"></i>
-                                </div>
-                                <div class="payment-info">
-                                    <h5>Credit / Debit Card</h5>
-                                    <p>Visa, Mastercard, RuPay accepted</p>
-                                </div>
-                            </div>
-
-                            <div class="payment-option" onclick="selectPayment(this)">
-                                <div class="payment-icon">
-                                    <i class="fas fa-university"></i>
-                                </div>
-                                <div class="payment-info">
-                                    <h5>Net Banking</h5>
-                                    <p>All major banks supported</p>
-                                </div>
-                            </div>
-
-                            <div class="payment-option" onclick="selectPayment(this)">
-                                <div class="payment-icon">
-                                    <i class="fas fa-wallet"></i>
-                                </div>
-                                <div class="payment-info">
-                                    <h5>UPI Payment</h5>
-                                    <p>Google Pay, PhonePe, Paytm</p>
-                                </div>
-                            </div>
-
-                            <div class="payment-option" onclick="selectPayment(this)">
-                                <div class="payment-icon">
-                                    <i class="fas fa-hotel"></i>
-                                </div>
-                                <div class="payment-info">
-                                    <h5>Pay at Hotel</h5>
-                                    <p>Pay during check-in (Limited availability)</p>
-                                </div>
-                            </div>
-
-                            <button type="button" class="btn-continue" onclick="nextStep(4)">
-                                <i class="fas fa-lock me-2"></i>Proceed to Pay ₹6,998
-                            </button>
-                            <button type="button" class="btn-back" onclick="nextStep(2)">Back</button>
-                        </div>
-                    </div>
-
-                    <!-- Step 4: Confirmation -->
-                    <div class="booking-step" id="content-step4">
-                        <div class="booking-card" style="text-align: center;">
-                            <div style="font-size: 5rem; color: var(--gold); margin-bottom: 20px;">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <h2 style="color: var(--peacock-green); font-weight: 700; margin-bottom: 15px;">
-                                Booking Confirmed!
-                            </h2>
-                            <p style="font-size: 1.2rem; color: #666; margin-bottom: 30px;">
-                                Your booking has been successfully confirmed. We've sent the confirmation details to your email.
-                            </p>
-                            
-                            <div style="background: var(--palm-cream); padding: 30px; border-radius: 15px; margin-bottom: 30px;">
-                                <h4 style="color: var(--peacock-green); margin-bottom: 20px;">Booking Details</h4>
-                                <div style="display: grid; gap: 15px; text-align: left;">
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <span style="color: #666;">Booking ID:</span>
-                                        <strong style="color: var(--peacock-green);">DWK2024-7892</strong>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <span style="color: #666;">Hotel:</span>
-                                        <strong>Krishna Heritage Hotel</strong>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <span style="color: #666;">Check-in:</span>
-                                        <strong>25 Dec 2024</strong>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <span style="color: #666;">Check-out:</span>
-                                        <strong>27 Dec 2024</strong>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <span style="color: #666;">Total Amount:</span>
-                                        <strong style="color: var(--peacock-green); font-size: 1.3rem;">₹6,998</strong>
-                                    </div>
-                                </div>
-                            </div>
+</html>
