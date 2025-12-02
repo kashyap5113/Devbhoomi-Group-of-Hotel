@@ -240,6 +240,7 @@
                             <h4 class="destination-name">Dwarkadhish Temple</h4>
                             <p class="destination-desc">Iconic Krishna temple at the heart of Dwarka</p>
                             <a href="{% url 'hotels:search' %}" class="btn-view-hotels">View Nearby Hotels</a>
+                            <a href="{% url 'core:destination_detail' slug='dwarkadhish-temple' %}" class="btn-view-hotels" style="margin-top:8px;">View Info</a>
                         </div>
                     </div>
                 </div>
@@ -251,6 +252,7 @@
                             <h4 class="destination-name">Gomti Ghat</h4>
                             <p class="destination-desc">Sacred bathing ghat on the Gomti River</p>
                             <a href="{% url 'hotels:search' %}" class="btn-view-hotels">View Nearby Hotels</a>
+                            <a href="{% url 'core:destination_detail' slug='gomti-ghat' %}" class="btn-view-hotels" style="margin-top:8px;">View Info</a>
                         </div>
                     </div>
                 </div>
@@ -262,6 +264,7 @@
                             <h4 class="destination-name">Beyt Dwarka</h4>
                             <p class="destination-desc">Island temple with pristine beaches</p>
                             <a href="{% url 'hotels:search' %}" class="btn-view-hotels">View Nearby Hotels</a>
+                            <a href="{% url 'core:destination_detail' slug='beyt-dwarka' %}" class="btn-view-hotels" style="margin-top:8px;">View Info</a>
                         </div>
                     </div>
                 </div>
@@ -273,10 +276,13 @@
                             <h4 class="destination-name">Nageshwar Jyotirlinga</h4>
                             <p class="destination-desc">One of the 12 sacred Jyotirlinga temples</p>
                             <a href="{% url 'hotels:search' %}" class="btn-view-hotels">View Nearby Hotels</a>
+                            <a href="{% url 'core:destination_detail' slug='nageshwar-jyotirlinga' %}" class="btn-view-hotels" style="margin-top:8px;">View Info</a>
                         </div>
                     </div>
-                </div>
-            </div>
+            
+          
+               
+          
         </div>
     </section>
 
@@ -287,7 +293,6 @@
                 <h2>About Dwarka</h2>
                 <p>The sacred city of Lord Krishna</p>
             </div>
-            
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4">
                     <img src="static/images/Dwarkamain.jpg" alt="Dwarka" style="border-radius: 20px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
