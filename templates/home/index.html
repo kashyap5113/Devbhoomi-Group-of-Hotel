@@ -124,45 +124,93 @@
         </div>
     </section>
 
-    <!-- Featured Hotels Carousel -->
-    <section class="featured-section">
-        <div class="container">
-            <div class="section-title">
-                <h2>Featured Hotels</h2>
-                <p>Handpicked premium stays for your divine journey</p>
-            </div>
-            {% if featured_hotels %}
-            <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-indicators">
-                    {% for hotel in featured_hotels %}
-                        <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></button>
-                    {% endfor %}
-                </div>
-                <div class="carousel-inner">
-                    {% for hotel in featured_hotels %}
-                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                        {% if hotel.main_image %}
-                            <img src="{{ hotel.main_image.url }}" alt="{{ hotel.name }}">
-                        {% else %}
-                            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=400&fit=crop" alt="{{ hotel.name }}">
-                        {% endif %}
-                        <div class="carousel-caption">
-                            <h3>{{ hotel.name }}</h3>
-                            <p>{{ hotel.description|default:'Premium stay in Dwarka'|truncatewords:20 }}</p>
-                           <a href="{% url 'hotels:details' hotel.slug %}" class="btn btn-light mt-3">View Details</a>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                </button>
-            </div>
-            {% endif %}
+    <!-- Popular Destinations Carousel -->
+    <section class="destinations-section py-5" id="popular-destinations">
+      <div class="container">
+        <div class="section-title text-center mb-4">
+          <h2 style="color:#008B8B;font-family:'Poppins',sans-serif;font-weight:700;">Popular Destinations</h2>
         </div>
+        <div id="destinationsCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#destinationsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#destinationsCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#destinationsCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#destinationsCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+            <button type="button" data-bs-target="#destinationsCarousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
+            <button type="button" data-bs-target="#destinationsCarousel" data-bs-slide-to="5" aria-label="Slide 6"></button>
+             <button type="button" data-bs-target="#destinationsCarousel" data-bs-slide-to="6" aria-label="Slide 7"></button>
+          </div>
+          <div class="carousel-inner rounded-4 shadow-lg">
+            <div class="carousel-item active">
+              <div class="d-block w-100 popular-carousel-bg" style="background:url('static/images/ambaji.jpg') center/cover;height:370px;position:relative;">
+                <div class="carousel-caption d-flex flex-column justify-content-center align-items-start h-100 text-start">
+                  <h3 style="font-family:'Poppins',sans-serif;font-size:2.1rem;font-weight:700;color:#FFD700;">Ambaji Temple</h3>
+                  <a href="#" class="btn btn-lg mt-2" style="background:#FFD700;color:#008B8B;font-family:'Poppins',sans-serif;font-weight:600;border-radius:1.5rem;box-shadow:0 2px 12px rgba(0,139,139,0.12);transition:background .2s;">View package</a>
+                </div>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <div class="d-block w-100 popular-carousel-bg" style="background:url('static/images/girnar.jpg') center/cover;height:370px;position:relative;">
+                <div class="carousel-caption d-flex flex-column justify-content-center align-items-start h-100 text-start">
+                  <h3 style="font-family:'Poppins',sans-serif;font-size:2.1rem;font-weight:700;color:#FFD700;">Girnar</h3>
+                  <a href="#" class="btn btn-lg mt-2" style="background:#FFD700;color:#008B8B;font-family:'Poppins',sans-serif;font-weight:600;border-radius:1.5rem;box-shadow:0 2px 12px rgba(0,139,139,0.12);transition:background .2s;">View package</a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="carousel-item">
+              <div class="d-block w-100 popular-carousel-bg" style="background:url('static/images/gopi_talav.jpg') center/cover;height:370px;position:relative;">
+                <div class="carousel-caption d-flex flex-column justify-content-center align-items-start h-100 text-start">
+                  <h3 style="font-family:'Poppins',sans-serif;font-size:2.1rem;font-weight:700;color:#FFD700;">Gopi Talav</h3>
+                  <a href="#" class="btn btn-lg mt-2" style="background:#FFD700;color:#008B8B;font-family:'Poppins',sans-serif;font-weight:600;border-radius:1.5rem;box-shadow:0 2px 12px rgba(0,139,139,0.12);transition:background .2s;">View package</a>
+                </div>
+              </div>
+            </div>
+
+             <div class="carousel-item">
+              <div class="d-block w-100 popular-carousel-bg" style="background:url('static/images/somnath.jpg') center/cover;height:370px;position:relative;">
+                <div class="carousel-caption d-flex flex-column justify-content-center align-items-start h-100 text-start">
+                  <h3 style="font-family:'Poppins',sans-serif;font-size:2.1rem;font-weight:700;color:#FFD700;">Somnath Temple</h3>
+                  <a href="#" class="btn btn-lg mt-2" style="background:#FFD700;color:#008B8B;font-family:'Poppins',sans-serif;font-weight:600;border-radius:1.5rem;box-shadow:0 2px 12px rgba(0,139,139,0.12);transition:background .2s;">View package</a>
+                </div>
+              </div>
+            </div>
+
+             <div class="carousel-item">
+              <div class="d-block w-100 popular-carousel-bg" style="background:url('static/images/sou.jpg') center/cover;height:370px;position:relative;">
+                <div class="carousel-caption d-flex flex-column justify-content-center align-items-start h-100 text-start">
+                  <h3 style="font-family:'Poppins',sans-serif;font-size:2.1rem;font-weight:700;color:#FFD700;">Statue of Unity</h3>
+                  <a href="#" class="btn btn-lg mt-2" style="background:#FFD700;color:#008B8B;font-family:'Poppins',sans-serif;font-weight:600;border-radius:1.5rem;box-shadow:0 2px 12px rgba(0,139,139,0.12);transition:background .2s;">View package</a>
+                </div>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <div class="d-block w-100 popular-carousel-bg" style="background:url('static/images/madhavpur_beach.jpg') center/cover;height:370px;position:relative;">
+                <div class="carousel-caption d-flex flex-column justify-content-center align-items-start h-100 text-start">
+                  <h3 style="font-family:'Poppins',sans-serif;font-size:2.1rem;font-weight:700;color:#FFD700;">Madhavpur Beach</h3>
+                  <a href="#" class="btn btn-lg mt-2" style="background:#FFD700;color:#008B8B;font-family:'Poppins',sans-serif;font-weight:600;border-radius:1.5rem;box-shadow:0 2px 12px rgba(0,139,139,0.12);transition:background .2s;">View package</a>
+                </div>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <div class="d-block w-100 popular-carousel-bg" style="background:url('static/images/rukmini_temple.jpg') center/cover;height:370px;position:relative;">
+                <div class="carousel-caption d-flex flex-column justify-content-center align-items-start h-100 text-start">
+                  <h3 style="font-family:'Poppins',sans-serif;font-size:2.1rem;font-weight:700;color:#FFD700;">Rukmini Temple</h3>
+                  <a href="#" class="btn btn-lg mt-2" style="background:#FFD700;color:#008B8B;font-family:'Poppins',sans-serif;font-weight:600;border-radius:1.5rem;box-shadow:0 2px 12px rgba(0,139,139,0.12);transition:background .2s;">View package</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#destinationsCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color:#008B8B;border-radius:50%;width:48px;height:48px;"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#destinationsCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true" style="background-color:#008B8B;border-radius:50%;width:48px;height:48px;"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
     </section>
 
     <!-- Top Rated Hotels Section -->
@@ -224,14 +272,13 @@
         </div>
     </section>
 
-    <!-- Popular Destinations Section -->
-    <section class="destinations-section" id="popular-destinations">
+    <!-- Popular Spots In Dwarka Section -->
+    <section class="destinations-section" id="popular-spots">
         <div class="container">
             <div class="section-title">
-                <h2>Popular Spots Around Dwarka</h2>
+                <h2>Popular Spots In Dwarka</h2>
                 <p>Stay close to Dwarkadhish Temple, Gomti Ghat, Beyt Dwarka, and more</p>
             </div>
-            
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="destination-card">
@@ -244,7 +291,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-lg-3 col-md-6">
                     <div class="destination-card">
                         <img src="static/images/gomti_ghaat.jpg" alt="Gomti Ghat">
@@ -256,7 +302,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-lg-3 col-md-6">
                     <div class="destination-card">
                         <img src="static/images/bet_dwarka.jpg" alt="Beyt Dwarka">
@@ -268,7 +313,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-lg-3 col-md-6">
                     <div class="destination-card">
                         <img src="static/images/nageshwar_jyortiling.jpg" alt="Nageshwar Temple">
@@ -279,10 +323,8 @@
                             <a href="{% url 'core:destination_detail' slug='nageshwar-jyotirlinga' %}" class="btn-view-hotels" style="margin-top:8px;">View Info</a>
                         </div>
                     </div>
-            
-          
-               
-          
+                </div>
+            </div>
         </div>
     </section>
 
