@@ -127,6 +127,9 @@ def booking_page(request, hotel_slug, room_type_id=None):
     return render(request, 'bookings/booking_page.html', context)
 
 
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='users:login')
 def process_booking(request):
     """Process booking form submission"""
     if request.method == 'POST':

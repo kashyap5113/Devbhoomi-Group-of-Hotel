@@ -319,7 +319,7 @@
                     </div>
 
                     <!-- Guest form -->
-                    <div class="booking-card" id="content-step2">
+                    <div class="booking-card" id="content-step2" style="display:none;">
                         <h2 class="section-title">
                             <i class="fas fa-id-card"></i>
                             Guest Details
@@ -825,5 +825,43 @@
             guestFormEl?.addEventListener('submit', syncGuestHiddenFields);
         });
     </script>
-    </body>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const continueBtn = document.getElementById('bookingDetailsContinueBtn');
+    const bookingForm = document.getElementById('bookingDetailsForm');
+    const guestFormCard = document.getElementById('content-step2');
+    if (continueBtn && bookingForm && guestFormCard) {
+        continueBtn.addEventListener('click', function() {
+            let valid = true;
+            bookingForm.querySelectorAll('input[required], input[type="number"]').forEach(function(input) {
+                if (!input.value || (input.type === 'number' && parseInt(input.value) < parseInt(input.min || '0'))) {
+                    input.classList.add('is-invalid');
+                    // Show inline error message
+                    const errorDiv = input.parentElement.querySelector('.form-text.text-danger, .invalid-feedback');
+                    if (errorDiv) {
+                        if (input.name === 'checkin' || input.name === 'checkout') {
+                            errorDiv.textContent = 'Please select a valid date.';
+                        } else if (input.name === 'guests' || input.name === 'adults' || input.name === 'rooms') {
+                            errorDiv.textContent = 'Please fill this field with a valid value.';
+                        } else {
+                            errorDiv.textContent = 'This field is required.';
+                        }
+                        errorDiv.style.display = 'block';
+                    }
+                    valid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            if (valid) {
+                guestFormCard.style.display = 'block';
+                guestFormCard.scrollIntoView({behavior: 'smooth'});
+            } else {
+                bookingForm.classList.add('was-validated');
+            }
+        });
+    }
+});
+</script>
+</body>
     </html>
