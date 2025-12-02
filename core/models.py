@@ -24,6 +24,10 @@ class Destination(models.Model):
         default=False,
         help_text="Show on homepage"
     )
+    highlight_points = models.TextField(
+        blank=True,
+        help_text="Optional bullet summary (one per line) for destination detail page"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -54,3 +58,20 @@ class ContactMessage(models.Model):
         ordering = ['-created_at']
         verbose_name = "Contact Message"
         verbose_name_plural = "Contact Messages"
+
+
+class DestinationImage(models.Model):
+    destination = models.ForeignKey(
+        Destination,
+        related_name='gallery_images',
+        on_delete=models.CASCADE
+    )
+    image = models.ImageField(upload_to='destinations/gallery/')
+    caption = models.CharField(max_length=200, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f"{self.destination.name} image #{self.order or self.id}"

@@ -5,7 +5,7 @@
 # pip install -r requirements.txt
 
 # Django Framework
-Django==4.2.7
+Django==4.2.16
 
 # Image Processing (for hotel images, profile pictures)
 Pillow==11.0.0
@@ -40,6 +40,12 @@ whitenoise==6.6.0
 
 # For Time-based One-Time Password (2FA)
 pyotp==2.9.0
+
+# Payment gateway SDK
+razorpay==1.4.2
+
+# Temporary pin to avoid pkg_resources deprecation warning triggered by razorpay
+setuptools<81
 
 # For PostgreSQL (if switching from SQLite)
 # psycopg2-binary==2.9.9

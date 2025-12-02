@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment - Devbhoomi Hotels</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f7f8f9;
+            font-family: 'Poppins', 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+        .checkout-card {
+            max-width: 560px;
+            margin: 60px auto;
+            border-radius: 24px;
+            padding: 32px;
+            background: #fff;
+            box-shadow: 0 24px 60px rgba(4, 101, 78, 0.12);
+            text-align: center;
+        }
+        .brand-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            background: rgba(4, 101, 78, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: #04654e;
+            font-size: 32px;
+        }
+        .amount-display {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #062b26;
+        }
+        .helper-text {
+            color: #526063;
+            font-size: 0.95rem;
+        }
+        #pay-btn {
+            margin-top: 24px;
+            padding: 12px 28px;
+            font-size: 1rem;
+            border-radius: 12px;
+            background: #04654e;
+            border: none;
+        }
+        .cancel-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #5f6b6d;
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-card">
+        <div class="brand-icon">
+            <i class="fas fa-rupee-sign"></i>
+        </div>
+        <h2 class="fw-bold">Complete Your Payment</h2>
+        <p class="helper-text mb-1">Booking ID: <strong>{{ booking.booking_id }}</strong></p>
+        <p class="helper-text">Hotel: {{ hotel.name }}</p>
+        <div class="amount-display">₹{{ display_amount|floatformat:0 }} <small class="text-muted">{{ currency }}</small></div>
+        <p class="helper-text">You will be redirected to Razorpay's secure checkout.</p>
+        <button id="pay-btn" class="btn btn-success w-100">Pay with Razorpay</button>
+        <a class="cancel-link" href="{{ cancel_url }}">Cancel &amp; go back</a>
+    </div>
+
+    <form id="razorpay-verification-form" method="post" action="{{ verify_url }}" class="d-none">
+        {% csrf_token %}
+        <input type="hidden" name="booking_id" value="{{ booking.booking_id }}">
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" defer></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        (function() {
+            const options = {
+                key: "{{ razorpay_key_id }}",
+                amount: "{{ amount_paise }}",
+                currency: "{{ currency }}",
+                name: "{{ hotel.name }}",
+                description: "Booking {{ booking.booking_id }}",
+                order_id: "{{ order_id }}",
+                prefill: {
+                    name: "{{ guest.name }}",
+                    email: "{{ guest.email }}",
+                    contact: "{{ guest.phone }}"
+                },
+                notes: {
+                    booking_id: "{{ booking.booking_id }}",
+                    hotel: "{{ hotel.name }}"
+                },
+                theme: {
+                    color: "#04654E"
+                },
+                modal: {
+                    ondismiss: function() {
+                        window.location.href = "{{ cancel_url }}";
+                    }
+                },
+                handler: function (response) {
+                    const form = document.getElementById('razorpay-verification-form');
+                    form.querySelector('#razorpay_order_id').value = response.razorpay_order_id;
+                    form.querySelector('#razorpay_payment_id').value = response.razorpay_payment_id;
+                    form.querySelector('#razorpay_signature').value = response.razorpay_signature;
+                    form.submit();
+                }
+            };
+
+            const razorpayInstance = new Razorpay(options);
+
+            razorpayInstance.on('payment.failed', function () {
+                window.location.href = "{{ cancel_url }}";
+            });
+
+            const openCheckout = () => razorpayInstance.open();
+            document.getElementById('pay-btn').addEventListener('click', openCheckout);
+            // Auto open on load for a smoother UX
+            openCheckout();
+        })();
+    </script>
+</body>
+</html>

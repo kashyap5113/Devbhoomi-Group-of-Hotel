@@ -77,6 +77,45 @@
         .booking-card .form-select.is-valid {
             border-color: #198754;
         }
+        .payment-options-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .payment-option-card {
+            border: 1px solid rgba(4, 101, 78, 0.2);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+            background: #fff;
+        }
+        .payment-option-card:hover {
+            box-shadow: 0 10px 22px rgba(4, 101, 78, 0.12);
+            border-color: var(--peacock-green);
+        }
+        .payment-option-card input[type="radio"] {
+            margin-top: 6px;
+        }
+        .payment-option-card .label-title {
+            font-weight: 600;
+            color: #062b26;
+        }
+        .payment-option-card .label-subtext {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #5f6b6d;
+        }
+        .payment-option-card.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        .coupon-field .form-control {
+            border-radius: 12px;
+        }
     </style>
 </head>
 <body>
@@ -289,11 +328,11 @@
                             {% csrf_token %}
                             <input type="hidden" name="hotel_id" value="{{ hotel.id }}">
                             {% if selected_room %}<input type="hidden" name="room_type_id" value="{{ selected_room.id }}">{% endif %}
-                            <input type="hidden" name="checkin" value="{{ checkin }}">
-                            <input type="hidden" name="checkout" value="{{ checkout }}">
-                            <input type="hidden" name="adults" value="{{ adults }}">
-                            <input type="hidden" name="children" value="{{ children }}">
-                            <input type="hidden" name="rooms" value="{{ rooms }}">
+                            <input type="hidden" id="guestCheckin" name="checkin" value="{{ checkin }}">
+                            <input type="hidden" id="guestCheckout" name="checkout" value="{{ checkout }}">
+                            <input type="hidden" id="guestAdults" name="adults" value="{{ adults }}">
+                            <input type="hidden" id="guestChildren" name="children" value="{{ children }}">
+                            <input type="hidden" id="guestRooms" name="rooms" value="{{ rooms }}">
 
                             <div class="row">
                                 <div class="col-md-4 mb-3">
@@ -352,6 +391,47 @@
                                 <div class="form-text text-muted">Maximum 250 characters.</div>
                             </div>
 
+                            <div class="mb-4">
+                                <label class="form-label" for="couponCode">Coupon Code</label>
+                                <input type="text" class="form-control coupon-field" id="couponCode" name="coupon_code" placeholder="Enter coupon (if any)">
+                                <div class="form-text text-muted">Have a promo code? Enter it here before continuing.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label d-block">Payment Method</label>
+                                <div class="payment-options-wrapper">
+                                    {% if razorpay_enabled %}
+                                    <label class="payment-option-card">
+                                        <input type="radio" name="payment_method" value="razorpay" class="form-check-input" checked>
+                                        <div>
+                                            <div class="label-title">Pay Online (Razorpay)</div>
+                                            <p class="label-subtext">Instant confirmation via UPI / Cards / Netbanking. Powered by Razorpay.</p>
+                                        </div>
+                                    </label>
+                                    {% else %}
+                                    <label class="payment-option-card disabled">
+                                        <input type="radio" class="form-check-input" disabled>
+                                        <div>
+                                            <div class="label-title">Pay Online (Razorpay)</div>
+                                            <p class="label-subtext">Online payments are temporarily unavailable.</p>
+                                        </div>
+                                    </label>
+                                    {% endif %}
+                                    <label class="payment-option-card">
+                                        <input type="radio" name="payment_method" value="payathotel" class="form-check-input" {% if not razorpay_enabled %}checked{% endif %}>
+                                        <div>
+                                            <div class="label-title">Pay at Hotel</div>
+                                            <p class="label-subtext">Reserve now and settle the bill at check-in.</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                {% if not razorpay_enabled %}
+                                <div class="alert alert-warning mt-3 mb-0">
+                                    Online payments will appear once Razorpay credentials are configured in settings.
+                                </div>
+                                {% endif %}
+                            </div>
+
                             <div class="sticky-footer">
                                 <button type="submit" class="btn-continue w-100">
                                     Continue
@@ -400,7 +480,10 @@
                         <h5 class="fw-bold mb-3">Price Details</h5>
                         <div class="price-row">
                             <span class="price-label">Base Price ({{ booking_summary.nights }} night{% if booking_summary.nights > 1 %}s{% endif %})<br><span class="text-muted small">(Room price × Rooms × Nights)</span></span>
-                            <span class="price-value base-amount">₹{{ pricing.base_price|floatformat:0 }}</span>
+                            <span class="price-value base-amount"
+                                  data-price-per-night="{{ pricing.nightly_rate }}"
+                                  data-initial-rooms="{{ booking_summary.rooms }}"
+                                  data-initial-nights="{{ booking_summary.nights }}">₹{{ pricing.base_price|floatformat:0 }}</span>
                         </div>
                         {% if pricing.discount %}
                         <div class="price-row">
@@ -461,6 +544,8 @@
 
                 guestForm.querySelectorAll('.form-control, .form-select').forEach(function(field) {
                     field.classList.toggle('is-invalid', !field.checkValidity());
+                    field.classList.toggle('is-valid', field.checkValidity());
+                });
             });
         });
     </script>
@@ -478,6 +563,22 @@
             const guestError = bookingForm.querySelector('#booking-guest-error');
             const roomError = bookingForm.querySelector('#booking-room-error');
             const continueBtn = bookingForm.querySelector('#bookingDetailsContinueBtn');
+            const guestFormEl = document.getElementById('guestDetailsForm');
+
+            // Hidden fields inside guest form that must stay in sync
+            const hiddenCheckin = document.getElementById('guestCheckin');
+            const hiddenCheckout = document.getElementById('guestCheckout');
+            const hiddenAdults = document.getElementById('guestAdults');
+            const hiddenChildren = document.getElementById('guestChildren');
+            const hiddenRooms = document.getElementById('guestRooms');
+
+            const syncGuestHiddenFields = () => {
+                if (hiddenCheckin) hiddenCheckin.value = checkIn?.value || '';
+                if (hiddenCheckout) hiddenCheckout.value = checkOut?.value || '';
+                if (hiddenAdults) hiddenAdults.value = adults?.value || '1';
+                if (hiddenChildren) hiddenChildren.value = children?.value || '0';
+                if (hiddenRooms) hiddenRooms.value = rooms?.value || '1';
+            };
 
             // Sidebar summary fields
             const summaryCheckin = document.querySelector('.d-flex .fw-semibold');
@@ -664,6 +765,7 @@
                 if (summaryNights) summaryNights.textContent = calcNights();
                 if (summaryRooms) summaryRooms.textContent = rooms.value;
                 if (summaryGuests) summaryGuests.innerHTML = `<i class='fas fa-users me-2'></i>${adults.value} Adults${children.value > 0 ? ` & ${children.value} Children` : ''}`;
+                syncGuestHiddenFields();
                 // Booking calculation logic
                 const baseAmountElem = document.querySelector('.base-amount');
                 const taxElem = document.querySelector('.tax-amount');
@@ -688,7 +790,10 @@
             }
             // Update summary on input
             [checkIn, checkOut, adults, children, rooms].forEach((field) => {
-                field?.addEventListener('input', updateSummary);
+                field?.addEventListener('input', () => {
+                    updateSummary();
+                });
+                field?.addEventListener('change', syncGuestHiddenFields);
             });
             // Validate form on submit
             bookingForm.addEventListener('submit', function(event) {
@@ -703,19 +808,22 @@
             });
             // Initialize defaults
             distributeFromGuests(readValue(guests) || 1);
-        continueBtn?.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (checkIn.value === '' || checkOut.value === '' || parseInt(guests.value) < 1 || parseInt(adults.value) < 1 || parseInt(rooms.value) < 1) {
-                guestError.textContent = 'Please fill all booking details.';
-                return;
-            }
-            if (!ensureGuestTotalsMatch()) return;
-            guestError.textContent = '';
-            updateSummary();
+            continueBtn?.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (checkIn.value === '' || checkOut.value === '' || parseInt(guests.value) < 1 || parseInt(adults.value) < 1 || parseInt(rooms.value) < 1) {
+                    guestError.textContent = 'Please fill all booking details.';
+                    return;
+                }
+                if (!ensureGuestTotalsMatch()) return;
+                guestError.textContent = '';
+                syncGuestHiddenFields();
+                updateSummary();
+            });
+            // Initialize defaults once more after attaching listeners
+            distributeFromGuests(readValue(guests) || 1);
+            syncGuestHiddenFields();
+            guestFormEl?.addEventListener('submit', syncGuestHiddenFields);
         });
-        // Initialize defaults
-        distributeFromGuests(readValue(guests) || 1);
-    });
     </script>
     </body>
     </html>

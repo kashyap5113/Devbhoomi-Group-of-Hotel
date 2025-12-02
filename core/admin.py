@@ -5,7 +5,15 @@ File Location: core/admin.py
 """
 
 from django.contrib import admin
-from .models import Destination, ContactMessage
+
+from .models import ContactMessage, Destination, DestinationImage
+
+
+class DestinationImageInline(admin.TabularInline):
+    model = DestinationImage
+    extra = 1
+    fields = ["image", "caption", "order"]
+    ordering = ["order"]
 
 
 @admin.register(Destination)
@@ -34,6 +42,7 @@ class DestinationAdmin(admin.ModelAdmin):
     }
     
     list_editable = ['is_featured']
+    inlines = [DestinationImageInline]
 
 
 @admin.register(ContactMessage)

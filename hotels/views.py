@@ -1,14 +1,21 @@
-"""
-Hotels app views - Search, Details, Filters
-"""
+"""Hotels app views - Search, Details, Filters"""
 
 import re
 
-from django.shortcuts import render, get_object_or_404
+from django.contrib import messages
 from django.db.models import Q
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 
-from .models import Hotel, Amenity, Review
+from .models import Amenity, Hotel, Review
+
+
+LOCATION_LABEL_TO_ZONE = {
+    "Dwarkadhish Temple, Dwarka, Gujarat": "dwarkadhish",
+    "Gomti Ghat, Dwarka, Gujarat": "gomti_ghat",
+    "Dwarka Beach, Dwarka, Gujarat": "dwarka_beach",
+    "Bet Dwarka, Dwarka, Gujarat": "bet_dwarka",
+}
 
 def search_hotels(request):
     """Hotel search results with filters"""
@@ -31,6 +38,10 @@ def search_hotels(request):
     
     # Base queryset
     hotels = Hotel.objects.filter(is_active=True)
+
+    zone = LOCATION_LABEL_TO_ZONE.get(location)
+    if zone:
+        hotels = hotels.filter(location_zone=zone)
     
     # Apply price filter
     try:
@@ -150,20 +161,31 @@ def hotel_details(request, slug):
 
     # Handle review submission
     if request.method == 'POST':
+        from django.shortcuts import redirect
+
         delete_review_id = request.POST.get('delete_review_id')
         if delete_review_id:
-            Review.objects.filter(id=delete_review_id, hotel=hotel).delete()
-            from django.shortcuts import redirect
+            review = Review.objects.filter(id=delete_review_id, hotel=hotel).first()
+            if review:
+                if request.user.is_authenticated and (review.author == request.user or request.user.is_staff):
+                    review.delete()
+                    messages.success(request, 'Review deleted.')
+                else:
+                    messages.error(request, 'You are not allowed to delete this review.')
             return redirect(request.path)
+
         edit_review_id = request.POST.get('edit_review_id')
         if edit_review_id:
             review = Review.objects.filter(id=edit_review_id, hotel=hotel).first()
             if review:
-                review.rating = int(request.POST.get('edit_rating'))
-                review.comment = request.POST.get('edit_comment')
-                review.stay_date = request.POST.get('edit_stay_date')
-                review.save(update_fields=["rating", "comment", "stay_date"])
-            from django.shortcuts import redirect
+                if request.user.is_authenticated and (review.author == request.user or request.user.is_staff):
+                    review.rating = int(request.POST.get('edit_rating'))
+                    review.comment = request.POST.get('edit_comment')
+                    review.stay_date = request.POST.get('edit_stay_date')
+                    review.save(update_fields=["rating", "comment", "stay_date"])
+                    messages.success(request, 'Review updated.')
+                else:
+                    messages.error(request, 'You are not allowed to edit this review.')
             return redirect(request.path)
         guest_name = request.POST.get('guest_name')
         rating = request.POST.get('rating')
@@ -176,9 +198,10 @@ def hotel_details(request, slug):
                 rating=int(rating),
                 comment=comment,
                 stay_date=stay_date,
-                is_approved=True
+                is_approved=True,
+                author=request.user if request.user.is_authenticated else None,
             )
-            from django.shortcuts import redirect
+            messages.success(request, 'Thank you for your review!')
             return redirect(request.path)
 
     all_reviews = Review.objects.filter(hotel=hotel, is_approved=True)

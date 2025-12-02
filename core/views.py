@@ -1,11 +1,11 @@
-"""
-Core app views - Homepage and general pages
-"""
+"""Core app views - Homepage and general pages"""
 
-from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Destination, ContactMessage
+from django.shortcuts import get_object_or_404, redirect, render
+
 from hotels.models import Hotel
+
+from .models import ContactMessage, Destination
 
 def index(request):
     """Homepage view"""
@@ -45,4 +45,23 @@ def contact(request):
         return redirect('core:contact')
     
     return render(request, 'home/contact.html')
+
+
+def destination_detail(request, slug):
+    destination = get_object_or_404(Destination, slug=slug)
+    highlight_points = [
+        line.strip()
+        for line in (destination.highlight_points or '').splitlines()
+        if line.strip()
+    ]
+    gallery = destination.gallery_images.all()
+    related_destinations = Destination.objects.filter(is_featured=True).exclude(id=destination.id)[:3]
+
+    context = {
+        'destination': destination,
+        'highlight_points': highlight_points,
+        'gallery': gallery,
+        'related_destinations': related_destinations,
+    }
+    return render(request, 'destinations/detail.html', context)
 

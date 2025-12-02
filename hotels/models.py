@@ -4,8 +4,9 @@ Hotels App Models - Hotel, Amenities, Room Types, Reviews
 File Location: hotels/models.py
 """
 
-from django.db import models
+from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
 from django.utils.text import slugify
 
 
@@ -46,6 +47,14 @@ class Hotel(models.Model):
         ('guesthouse', 'Guest House'),
         ('homestay', 'Homestay'),
     ]
+
+    LOCATION_ZONES = [
+        ('dwarkadhish', 'Dwarkadhish Temple'),
+        ('gomti_ghat', 'Gomti Ghat'),
+        ('dwarka_beach', 'Dwarka Beach'),
+        ('bet_dwarka', 'Bet Dwarka'),
+        ('other', 'Dwarka City (Other)'),
+    ]
     
     # Basic Information
     name = models.CharField(max_length=200)
@@ -65,6 +74,12 @@ class Hotel(models.Model):
         help_text="e.g., 200m from Dwarkadhish Temple"
     )
     landmark = models.CharField(max_length=200, blank=True)
+    location_zone = models.CharField(
+        max_length=40,
+        choices=LOCATION_ZONES,
+        default='dwarkadhish',
+        help_text="Primary Dwarka landmark this hotel is closest to"
+    )
     latitude = models.DecimalField(
         max_digits=9,
         decimal_places=6,
@@ -231,6 +246,14 @@ class Review(models.Model):
         Hotel, 
         related_name='reviews', 
         on_delete=models.CASCADE
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='hotel_reviews',
+        help_text="Authenticated user who left the review (optional)"
     )
     guest_name = models.CharField(max_length=200)
     rating = models.IntegerField(

@@ -20,6 +20,10 @@ def user_login(request):
     """User login view"""
     form = LoginForm(request.POST or None)
 
+    # Clear any stale success/error notices (e.g., from logout/booking) when simply visiting the page
+    if request.method != 'POST':
+        list(messages.get_messages(request))
+
     if request.method == 'POST':
         if form.is_valid():
             user = form.get_user()
@@ -103,6 +107,10 @@ def otp_verify(request):
 def user_signup(request):
     """User signup view"""
     form = SignupForm(request.POST or None)
+
+    # Ensure stale messages from previous flows don't clutter the signup view
+    if request.method != 'POST':
+        list(messages.get_messages(request))
 
     if request.method == 'POST':
         if form.is_valid():

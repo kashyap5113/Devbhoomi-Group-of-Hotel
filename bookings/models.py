@@ -181,6 +181,7 @@ class Payment(models.Model):
         ('card', 'Credit/Debit Card'),
         ('netbanking', 'Net Banking'),
         ('upi', 'UPI'),
+        ('razorpay', 'Pay Online (Razorpay)'),
         ('payathotel', 'Pay at Hotel'),
     ]
     
@@ -196,6 +197,24 @@ class Payment(models.Model):
         max_length=100, 
         blank=True,
         help_text="Payment gateway transaction ID"
+    )
+    gateway_order_id = models.CharField(
+        max_length=100,
+        blank=True,
+        default='',
+        help_text="Razorpay order identifier"
+    )
+    gateway_payment_id = models.CharField(
+        max_length=100,
+        blank=True,
+        default='',
+        help_text="Razorpay payment identifier"
+    )
+    gateway_signature = models.CharField(
+        max_length=200,
+        blank=True,
+        default='',
+        help_text="Signature returned by Razorpay"
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     

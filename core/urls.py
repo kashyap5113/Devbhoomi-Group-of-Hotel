@@ -13,4 +13,6 @@ urlpatterns = [
     path("about/", views.about_dwarka, name="about"),
     # Contact form page
     path("contact/", views.contact, name="contact"),
+    # Destination detail page
+    path("destinations/<slug:slug>/", views.destination_detail, name="destination_detail"),
 ]

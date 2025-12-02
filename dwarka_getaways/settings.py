@@ -161,3 +161,9 @@ SITE_ID = 1
 
 # Skip Allauth intermediate confirmation page for Google login/signup
 SOCIALACCOUNT_LOGIN_ON_GET = True
+
+
+# Payment gateway configuration
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '')
+RAZORPAY_DEFAULT_CURRENCY = os.getenv('RAZORPAY_DEFAULT_CURRENCY', 'INR')
